@@ -15,9 +15,13 @@
     "typescript": "^4.2.2"
   },
   "scripts": {
+    "start": "tsc && pm2 start ./lib/app.js --name lockceptron",
+    "restart": "tsc && pm2 delete lockceptron && pm2 start ./lib/app.js --name lockceptron",
+    "stop": "pm2 delete lockceptron",
     "test": "ts-node src/app.ts"
   },
   "dependencies": {
-    "discord.js": "^12.5.1"
+    "discord.js": "^12.5.1",
+    "pm2": "^4.5.5"
   }
 }

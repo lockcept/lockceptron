@@ -1,6 +1,7 @@
 import Discord from 'discord.js';
 import { discordToken } from './config';
-// eslint-disable-next-line no-console
+import addMessageListener from './helpers/addMessageListener';
+import tmp from './messages/tmpMessageListener';
 
 const client = new Discord.Client();
 client.login(discordToken);
@@ -8,10 +9,5 @@ client.login(discordToken);
 client.on('ready', () => {
   console.log(`Logged in as ${client.user?.tag}!`);
 });
-client.on('message', (msg) => {
-  if (msg.content === 'ping') {
-    msg.reply('pong');
-  }
-});
 
-console.log('asdf');
+addMessageListener(client, tmp);
