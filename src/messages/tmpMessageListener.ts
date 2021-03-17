@@ -1,7 +1,7 @@
 import { MessageListener } from '../helpers/addMessageListener';
 
 const tmp:MessageListener = (msg) => {
-  if (msg.content.startsWith('tron help')) {
+  if (msg.content === 'tron help') {
     msg.channel.send('Hi! I am lockceptron');
   }
 };
