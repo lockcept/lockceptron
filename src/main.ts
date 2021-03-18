@@ -1,11 +1,11 @@
 import Discord from 'discord.js';
 import addMessageListener from './helpers/addMessageListener';
-import save from './messages/dbMessageListener';
-import tmp from './messages/tmpMessageListener';
+import help from './messages/helpMessageListener';
+import memo from './messages/memoMessageListener';
 
 const main = (client:Discord.Client) => {
-  addMessageListener(client, tmp);
-  addMessageListener(client, save);
+  addMessageListener(client, help);
+  addMessageListener(client, memo);
 };
 
 export default main;

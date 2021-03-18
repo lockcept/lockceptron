@@ -2,11 +2,13 @@ import Discord from 'discord.js';
 import { discordToken } from './config';
 import main from './main';
 
-const client = new Discord.Client();
-client.login(discordToken);
+const discordClient = new Discord.Client();
+discordClient.login(discordToken);
 
-client.on('ready', () => {
-  console.log(`Logged in as ${client.user?.tag}!`);
+discordClient.on('ready', () => {
+  console.log(`Logged in as ${discordClient.user?.tag}!`);
 });
 
-main(client);
+main(discordClient);
+
+export default discordClient;
