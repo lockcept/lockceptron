@@ -2,9 +2,9 @@ import {
   GetItemCommand, GetItemCommandInput, PutItemCommand, PutItemCommandInput,
 } from '@aws-sdk/client-dynamodb';
 import dynamoClient from '.';
-import { tableNames } from '../config';
+import { tableNameByStage } from '../config';
 
-const tableName = tableNames.memo;
+const tableName = tableNameByStage('memo');
 
 // eslint-disable-next-line import/prefer-default-export
 export const saveMemo = async (id:string, content:string) => {

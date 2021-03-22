@@ -1,5 +1,7 @@
 {
   "devDependencies": {
+    "@types/lodash": "^4.14.168",
+    "@types/node": "^14.14.35",
     "@typescript-eslint/eslint-plugin": "^4.15.2",
     "@typescript-eslint/parser": "^4.15.2",
     "eslint": "^7.21.0",
@@ -15,14 +17,15 @@
     "typescript": "^4.2.2"
   },
   "scripts": {
-    "start": "tsc && pm2 start ./lib/app.js --name lockceptron",
-    "restart": "tsc && pm2 delete lockceptron && pm2 start ./lib/app.js --name lockceptron",
+    "start": "tsc && STAGE=prod pm2 start ./lib/app.js --name lockceptron",
+    "restart": "tsc && pm2 delete lockceptron && STAGE=prod pm2 start ./lib/app.js --name lockceptron",
     "stop": "pm2 delete lockceptron",
-    "test": "ts-node src/app.ts"
+    "dev": "STAGE=dev ts-node src/app.ts"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.8.1",
     "discord.js": "^12.5.1",
+    "lodash": "^4.17.21",
     "pm2": "^4.5.5"
   }
 }
