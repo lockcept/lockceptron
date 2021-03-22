@@ -3,13 +3,14 @@ import {
 } from '@aws-sdk/client-dynamodb';
 import dynamoClient from '.';
 import { tableNameByStage } from '../config';
+import logger from '../helpers/logger';
 
 const tableName = tableNameByStage('memo');
 
 // eslint-disable-next-line import/prefer-default-export
 export const saveMemo = async (id:string, content:string) => {
   try {
-    console.log('saveMemo', id, content);
+    logger.log('saveMemo', { id, content });
     const input: PutItemCommandInput = {
       TableName: tableName,
       Item: {
@@ -20,7 +21,7 @@ export const saveMemo = async (id:string, content:string) => {
     const command = new PutItemCommand(input);
     await dynamoClient.send(command);
   } catch (err) {
-    console.error('saveMemo Error', err);
+    logger.error('saveMemo Error', err);
   }
 };
 
@@ -31,9 +32,9 @@ export const loadMemo = async (id:string):Promise<string | undefined> => {
     const command = new GetItemCommand(input);
     const output = await dynamoClient.send(command);
     const memo = output.Item?.content.S;
-    console.log('loadMemo', id, memo);
+    logger.log('loadMemo', { id, memo });
     return memo;
   } catch (err) {
-    console.error('loadMemo Error', err);
+    logger.error('loadMemo Error', err);
   }
 };
