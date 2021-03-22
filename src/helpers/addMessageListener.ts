@@ -1,4 +1,5 @@
 import Discord from "discord.js";
+import logger from "./logger";
 import parseMessage from "./parseMessage";
 
 export type MessageListener = (_: Discord.Message, __: string) => void;
@@ -8,9 +9,13 @@ const addMessageListener = (
   messageListener: MessageListener
 ) => {
   const wrappedListner = (msg: Discord.Message): void => {
-    const parsedMsg = parseMessage(msg.content);
-    if (!parsedMsg) return;
-    messageListener(msg, parsedMsg);
+    try {
+      const parsedMsg = parseMessage(msg.content);
+      if (!parsedMsg) return;
+      messageListener(msg, parsedMsg);
+    } catch (e) {
+      logger.error(e);
+    }
   };
   client.on("message", wrappedListner);
 };

@@ -39,16 +39,19 @@ export const saveMemo = async (
 };
 
 // eslint-disable-next-line consistent-return
-export const loadMemo = async (id: string): Promise<string | undefined> => {
+export const loadMemo = async (
+  guild: string,
+  user: string
+): Promise<string | undefined> => {
   try {
     const input: GetItemCommandInput = {
       TableName: tableName,
-      Key: { guild: { S: id }, user: { S: id } },
+      Key: { guild: { S: guild }, user: { S: user } },
     };
     const command = new GetItemCommand(input);
     const output = await dynamoClient.send(command);
     const memo = output.Item?.content.S;
-    logger.log("loadMemo", { id, memo });
+    logger.log("loadMemo", { guild, user, memo });
     return memo;
   } catch (err) {
     logger.error("loadMemo Error", err);

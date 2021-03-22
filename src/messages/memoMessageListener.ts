@@ -5,13 +5,15 @@ import { MessageListener } from "../helpers/addMessageListener";
 const memo: MessageListener = async (msg, message) => {
   if (msg.author.id === discordClient.user?.id) return;
   if (message === "memo") {
-    const load = await loadMemo(msg.author.id);
+    if (!msg.guild) throw Error("guild not found");
+    const load = await loadMemo(msg.guild.id, msg.author.id);
     if (!load) return;
     msg.channel.send(load);
     return;
   }
   if (message.startsWith("memo")) {
-    saveMemo(msg.author.id, msg.content.substring(5));
+    if (!msg.guild) throw Error("guild not found");
+    saveMemo(msg.guild.id, msg.author.id, message.substring(5));
   }
 };
 
