@@ -8,9 +8,12 @@ const randomPick: MessageListener = (msg, message) => {
     const MAX_TRY = 1000000;
     const args = yargsParser(message.substring(7));
     const number: number = args.n ? parseInt(args.n, 10) : 0;
-    if (!number && args.n)
-      msg.channel.send(`What is ${args.n}?? It needs to be a number`);
+    if (!number && args.n) {
+      msg.channel.send("-n argument invalid");
+      logger.log(args.n);
+    }
     const candidates = args._;
+    if (candidates.length === 0) return;
     logger.log("random args", args);
     const getOne = () => {
       return candidates[random(candidates.length - 1)];
