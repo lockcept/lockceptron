@@ -10,17 +10,11 @@ import logger from "../helpers/logger";
 
 const tableName = tableNameByStage("memo");
 
-interface memoItem {
-  guild: string;
-  user: string;
-}
-
-// eslint-disable-next-line import/prefer-default-export
 export const saveMemo = async (
   guild: string,
   user: string,
   content: string
-) => {
+): Promise<void> => {
   try {
     logger.log("saveMemo", { guild, user, content });
     const input: PutItemCommandInput = {
@@ -38,11 +32,10 @@ export const saveMemo = async (
   }
 };
 
-// eslint-disable-next-line consistent-return
 export const loadMemo = async (
   guild: string,
   user: string
-): Promise<string | undefined> => {
+): Promise<string | null> => {
   try {
     const input: GetItemCommandInput = {
       TableName: tableName,
@@ -52,8 +45,10 @@ export const loadMemo = async (
     const output = await dynamoClient.send(command);
     const memo = output.Item?.content.S;
     logger.log("loadMemo", { guild, user, memo });
+    if (!memo) return null;
     return memo;
   } catch (err) {
     logger.error("loadMemo Error", err);
+    return null;
   }
 };
