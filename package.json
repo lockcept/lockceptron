@@ -25,6 +25,7 @@
     "dev": "STAGE=dev ts-node-dev src/app.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-cloudwatch-logs": "^3.16.0",
     "@aws-sdk/client-dynamodb": "^3.8.1",
     "discord.js": "^12.5.1",
     "lodash": "^4.17.21",
