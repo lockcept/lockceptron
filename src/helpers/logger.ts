@@ -1,4 +1,6 @@
 import {
+  DescribeLogStreamsCommand,
+  DescribeLogStreamsCommandInput,
   PutLogEventsCommand,
   PutLogEventsCommandInput,
 } from "@aws-sdk/client-cloudwatch-logs";
@@ -20,16 +22,37 @@ const STREAM = `tron-${stage}`;
 class Logger {
   static logger = new Logger();
 
-  private sendMsgToCloudWatch = (msg: string, data?: any) => {
-    const input: PutLogEventsCommandInput = {
+  private getSequenceToken = async () => {
+    const input: DescribeLogStreamsCommandInput = {
       logGroupName: GROUP,
-      logStreamName: STREAM,
+      logStreamNamePrefix: STREAM,
+    };
+    const command = new DescribeLogStreamsCommand(input);
+    const output = await client.send(command);
+    if (!output.logStreams?.[0]) return {};
+    const {
+      logStreamName,
+      uploadSequenceToken: sequenceToken,
+    } = output.logStreams[0];
+    return { logGroupName: GROUP, logStreamName, sequenceToken };
+  };
+
+  private sendMsgToCloudWatch = async (msg: string, data?: any) => {
+    const {
+      logGroupName,
+      logStreamName,
+      sequenceToken,
+    } = await this.getSequenceToken();
+    const input: PutLogEventsCommandInput = {
+      logGroupName,
+      logStreamName,
       logEvents: [
         {
-          message: msg + (data ? ` ${JSON.stringify(data, null, 4)}` : null),
+          message: msg + (data ? ` ${JSON.stringify(data, null, 4)}` : ""),
           timestamp: Date.now(),
         },
       ],
+      sequenceToken,
     };
     const command = new PutLogEventsCommand(input);
     client.send(command).catch((e) => console.error(e));
