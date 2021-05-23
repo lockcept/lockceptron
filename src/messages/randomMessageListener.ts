@@ -22,6 +22,14 @@ const randomPick: MessageListener = (msg, message) => {
         })
         .countBy()
         .map((cnt, idx) => {
+          return {
+            cnt,
+            idx,
+          };
+        })
+        .sortBy("cnt")
+        .reverse()
+        .map(({ cnt, idx }) => {
           return `${candidates[Number(idx)]}: ${cnt}`;
         })
         .join("\n")
