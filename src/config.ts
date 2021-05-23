@@ -26,5 +26,8 @@ export const credentials = {
   secretAccessKey: "g87cLEsSDUCAOXXf/WFK0yAuQGnUPD3HgitDrN4U",
 };
 
-export const helpDoc =
+export const whatsNew =
   "https://www.notion.so/lockceptron-What-s-new-10b051197d724702946d1ab353c6d9ce";
+
+export const helpDoc =
+  "https://www.notion.so/lockceptron-DOCS-acd2449103174c0abd8b0a0083a17d89";
