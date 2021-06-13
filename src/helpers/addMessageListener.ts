@@ -10,6 +10,7 @@ const addMessageListener = (
 ) => {
   const wrappedListner = (msg: Discord.Message): void => {
     try {
+      if (msg.author.bot) return;
       const parsedMsg = parseMessage(msg.content);
       if (!parsedMsg) return;
       messageListener(msg, parsedMsg);
