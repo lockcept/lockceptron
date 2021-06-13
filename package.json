@@ -20,7 +20,7 @@
   },
   "scripts": {
     "start": "tsc && STAGE=prod pm2 start ./lib/app.js --name lockceptron",
-    "restart": "tsc && pm2 delete lockceptron && STAGE=prod pm2 start ./lib/app.js --name lockceptron",
+    "restart": "yarn && tsc && pm2 delete lockceptron && STAGE=prod pm2 start ./lib/app.js --name lockceptron",
     "stop": "pm2 delete lockceptron",
     "dev": "STAGE=dev ts-node-dev src/app.ts"
   },
