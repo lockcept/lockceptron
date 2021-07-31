@@ -1,4 +1,5 @@
 import {
+  AttributeValue,
   GetItemCommand,
   GetItemCommandInput,
   PutItemCommand,
@@ -10,20 +11,51 @@ import logger from "../helpers/logger";
 
 const tableName = tableNameByStage("boss");
 
+export interface BossItem {
+  guild: string;
+  itemId: string;
+  itemName: string;
+  from: string;
+  to: string[];
+  pay: string[];
+  price?: number;
+}
+
+const getBossItemFromItem = (
+  item:
+    | {
+        [key: string]: AttributeValue;
+      }
+    | undefined
+): BossItem | null => {
+  if (!item) return null;
+
+  const guild = item.guild?.S;
+  const itemId = item.item?.S;
+  const itemName = item.itemName?.S;
+  const from = item.from?.S;
+  const to = item.to?.SS;
+  const pay = item.pay?.SS ?? [];
+  const price = item.price?.N ? parseInt(item.price?.N, 10) : undefined;
+
+  if (!guild || !itemId || !itemName || !from || !to) return null;
+  return { guild, itemId, itemName, from, to, pay, price };
+};
+
 export const addItem = async (
   guild: string,
-  item: string,
+  itemId: string,
   itemName: string,
   from: string,
   to: string[]
 ): Promise<void> => {
   try {
-    logger.log("Boss: addItem", { guild, item, itemName, from, to });
+    logger.log("Boss: addItem", { guild, itemId, itemName, from, to });
     const input: PutItemCommandInput = {
       TableName: tableName,
       Item: {
         guild: { S: guild },
-        item: { S: item },
+        item: { S: itemId },
         itemName: { S: itemName },
         from: { S: from },
         to: { SS: to },
@@ -36,21 +68,21 @@ export const addItem = async (
   }
 };
 
-export const loadMemo = async (
+export const getBossItem = async (
   guild: string,
-  user: string
-): Promise<string | null> => {
+  item: string
+): Promise<BossItem | null> => {
   try {
     const input: GetItemCommandInput = {
       TableName: tableName,
-      Key: { guild: { S: guild }, user: { S: user } },
+      Key: { guild: { S: guild }, item: { S: item } },
     };
     const command = new GetItemCommand(input);
     const output = await dynamoClient.send(command);
-    const memo = output.Item?.content.S;
-    logger.log("Memo: loadMemo", { guild, user, memo });
-    if (!memo) return null;
-    return memo;
+    const bossItem = getBossItemFromItem(output.Item);
+    logger.log("Boss: getItems", { guild, item });
+    if (!bossItem) return null;
+    return bossItem;
   } catch (err) {
     logger.error("Memo: loadMemo Error", err);
     return null;
