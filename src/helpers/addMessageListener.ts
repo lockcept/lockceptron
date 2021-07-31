@@ -15,7 +15,7 @@ const addMessageListener = (
       if (!parsedMsg) return;
       messageListener(msg, parsedMsg);
     } catch (e) {
-      logger.error(e);
+      logger.error("addMessageListener", e);
     }
   };
   client.on("message", wrappedListner);

@@ -69,14 +69,14 @@ class Logger {
     this.sendMsgToCloudWatch(msg, data);
   };
 
-  public error = (msg: string | Error, data?: any) => {
+  public error = (msg: string, data?: any) => {
     if (!data) {
       console.error(msg);
-      this.sendMsgToCloudWatch(util.inspect(msg, false, 2));
+      this.sendMsgToCloudWatch(msg);
       return;
     }
     console.error(msg, data);
-    this.sendMsgToCloudWatch(util.inspect(msg, false, 2), data);
+    this.sendMsgToCloudWatch(msg, data);
   };
 }
 

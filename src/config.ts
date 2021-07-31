@@ -13,6 +13,7 @@ export const discordTokenByStage: string = get(discordToken, stage);
 
 const tableNames = {
   memo: "memo",
+  boss: "boss",
 };
 
 export const tableNameByStage = (tableName: keyof typeof tableNames) => {
