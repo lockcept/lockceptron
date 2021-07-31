@@ -1,7 +1,13 @@
 import { MessageEmbed } from "discord.js";
-import { chain } from "lodash";
+import { chain, filter } from "lodash";
 import { customAlphabet } from "nanoid";
-import { getBossItem, addItem } from "../dynamodb/boss";
+import { nolookalikes } from "nanoid-dictionary";
+import {
+  getAllBossItems,
+  getBossItem,
+  addItem,
+  BossItem,
+} from "../dynamodb/boss";
 
 import { MessageListener } from "../helpers/addMessageListener";
 import logger from "../helpers/logger";
@@ -11,6 +17,12 @@ const boss: MessageListener = async (msg, message) => {
     const result = rawString.match(/^<@!([0-9]+)>$/i);
     if (!result) return null;
     return result[1];
+  };
+
+  const getDividend = (bossItem: BossItem): number => {
+    const peopleCnt = bossItem.to.length + 1;
+    const { price = 0, commission = 1 } = bossItem;
+    return (price * commission) / peopleCnt;
   };
 
   const { guild } = msg;
@@ -30,23 +42,53 @@ const boss: MessageListener = async (msg, message) => {
       .value();
     if (userIds.length === 0) return;
 
-    const itemId = customAlphabet("0123456789abcdefghijklmnopqrstuvwxyz", 10)();
+    const itemId = customAlphabet(nolookalikes, 6)();
+    const itemName = item.substring(0, 20);
     const fromUser = msg.author.id;
-    addItem(guild.id, itemId, item, fromUser, userIds);
-    msg.channel.send(`[${itemId}]: ${item} 등록 완료!`);
+    addItem(guild.id, itemId, itemName, fromUser, userIds);
+    msg.channel.send(`[${itemId}]: ${itemName} 등록 완료!`);
   };
   const remove = (rawString: string): void => {};
   const price = (rawString: string): void => {};
   const pay = (rawString: string): void => {};
   const list = async (rawString: string): Promise<void> => {
     if (rawString === "me") {
-      // TODO
-      msg.channel.send("Not Implemented");
+      const bossItems = await getAllBossItems(guild.id);
+      const myUserId = msg.author.id;
+      const myBossItems = filter(
+        bossItems,
+        (item) =>
+          item.from === myUserId ||
+          (item.to.includes(myUserId) && !item.pay.includes(myUserId))
+      );
+      const description = myBossItems
+        .map((item) => {
+          return `${item.itemId}${
+            item.price ? ` ${getDividend(item)}` : ""
+          } - ${item.itemName} (<@!${item.from}>)`;
+        })
+        .join("\n");
+      msg.channel.send(
+        new MessageEmbed({
+          title: `${msg.member?.displayName} Items`,
+          description,
+        })
+      );
       return;
     }
     if (rawString === "all") {
-      // TODO
-      msg.channel.send("Not Implemented");
+      const bossItems = await getAllBossItems(guild.id);
+      const description = bossItems
+        .map((item) => {
+          return `${item.itemId}: ${item.itemName} (<@!${item.from}>)`;
+        })
+        .join("\n");
+      msg.channel.send(
+        new MessageEmbed({
+          title: `All Items`,
+          description,
+        })
+      );
       return;
     }
     const itemId = rawString;
