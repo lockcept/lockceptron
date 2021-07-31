@@ -4,6 +4,7 @@ import {
   PutLogEventsCommand,
   PutLogEventsCommandInput,
 } from "@aws-sdk/client-cloudwatch-logs";
+import util from "util";
 /* eslint-disable no-console */
 import * as AWS from "@aws-sdk/client-cloudwatch-logs";
 
@@ -68,14 +69,14 @@ class Logger {
     this.sendMsgToCloudWatch(msg, data);
   };
 
-  public error = (msg: string, data?: any) => {
+  public error = (msg: string | Error, data?: any) => {
     if (!data) {
       console.error(msg);
-      this.sendMsgToCloudWatch(msg);
+      this.sendMsgToCloudWatch(util.inspect(msg, false, 2));
       return;
     }
     console.error(msg, data);
-    this.sendMsgToCloudWatch(msg, data);
+    this.sendMsgToCloudWatch(util.inspect(msg, false, 2), data);
   };
 }
 

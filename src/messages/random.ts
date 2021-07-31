@@ -10,7 +10,7 @@ const randomPick: MessageListener = (msg, message) => {
     const number: number = args.n ? parseInt(args.n, 10) : 0;
     if (!number && args.n) {
       msg.channel.send("-n argument invalid");
-      logger.log(args.n);
+      logger.log("[random]: invalid argument", { args: args.n });
     }
     const candidates = args._;
     if (candidates.length === 0) return;

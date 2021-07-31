@@ -7,7 +7,7 @@ const discordClient = new Discord.Client();
 discordClient.login(discordTokenByStage);
 
 discordClient.on("ready", () => {
-  logger.log(`Logged in as ${discordClient.user?.tag}!`);
+  logger.log(`App: Logged in as ${discordClient.user?.tag}!`);
 });
 
 main(discordClient);

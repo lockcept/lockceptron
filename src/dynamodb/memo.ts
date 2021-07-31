@@ -16,7 +16,7 @@ export const saveMemo = async (
   content: string
 ): Promise<void> => {
   try {
-    logger.log("saveMemo", { guild, user, content });
+    logger.log("Memo: saveMemo", { guild, user, content });
     const input: PutItemCommandInput = {
       TableName: tableName,
       Item: {
@@ -28,7 +28,7 @@ export const saveMemo = async (
     const command = new PutItemCommand(input);
     await dynamoClient.send(command);
   } catch (err) {
-    logger.error("saveMemo Error", err);
+    logger.error("Memo: saveMemo Error", err);
   }
 };
 
@@ -44,11 +44,11 @@ export const loadMemo = async (
     const command = new GetItemCommand(input);
     const output = await dynamoClient.send(command);
     const memo = output.Item?.content.S;
-    logger.log("loadMemo", { guild, user, memo });
+    logger.log("Memo: loadMemo", { guild, user, memo });
     if (!memo) return null;
     return memo;
   } catch (err) {
-    logger.error("loadMemo Error", err);
+    logger.error("Memo: loadMemo Error", err);
     return null;
   }
 };
