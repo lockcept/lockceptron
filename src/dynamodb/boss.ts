@@ -11,7 +11,7 @@ import {
   UpdateItemCommand,
   UpdateItemCommandInput,
 } from "@aws-sdk/client-dynamodb";
-import { compact, update } from "lodash";
+import { compact } from "lodash";
 import dynamoClient from ".";
 import { tableNameByStage } from "../config";
 import logger from "../helpers/logger";
