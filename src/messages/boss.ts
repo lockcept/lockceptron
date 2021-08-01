@@ -1,5 +1,5 @@
 import { MessageEmbed } from "discord.js";
-import { chain, filter } from "lodash";
+import { chain, filter, forEach, map, partition } from "lodash";
 import { customAlphabet } from "nanoid";
 import { nolookalikes } from "nanoid-dictionary";
 import {
@@ -36,17 +36,19 @@ const boss: MessageListener = async (msg, message) => {
       return;
     }
 
+    const fromUser = msg.author.id;
+
     const userIds = chain(users)
       .map((user) => {
         return getUserId(user);
       })
       .compact()
+      .filter((userId) => userId !== fromUser)
       .value();
     if (userIds.length === 0) return;
 
     const itemId = customAlphabet(nolookalikes, 6)();
     const itemName = item.substring(0, 20);
-    const fromUser = msg.author.id;
     addBossItem(guild.id, itemId, itemName, fromUser, userIds);
     msg.channel.send(`[${itemId}]: ${itemName} 등록 완료!`);
   };
@@ -88,9 +90,32 @@ const boss: MessageListener = async (msg, message) => {
       );
   };
 
+  const payAll = async (from: string, to: string): Promise<number> => {
+    const allBossItems = await getAllBossItems(guild.id);
+    const validBossItems = allBossItems.filter(
+      (bossItem) =>
+        !!bossItem.price && bossItem.from === from && bossItem.to.includes(to)
+    );
+    const payTasks = validBossItems.map((item) => {
+      return updateBossItem(guild.id, item.itemId, {}, { pay: [to] });
+    });
+    const paidItems = await Promise.all(payTasks);
+    const amount = chain(paidItems)
+      .compact()
+      .map((item) => getDividend(item))
+      .sum()
+      .value();
+    return amount;
+  };
+
   const pay = async (cmd: string): Promise<void> => {
     const [itemId, ...users] = cmd.split(" ");
-    if (getUserId(itemId)) {
+    const checkIfUser = getUserId(itemId);
+    if (checkIfUser) {
+      const toUser = checkIfUser;
+      const paidAmount = await payAll(msg.author.id, toUser);
+      if (paidAmount)
+        msg.channel.send(`<@!${toUser}>에게 ${paidAmount} 상환 완료!`);
       return;
     }
 
@@ -109,8 +134,8 @@ const boss: MessageListener = async (msg, message) => {
       msg.channel.send(`[${itemId}]: 권한이 없습니다.`);
       return;
     }
-    const existUserIds = userIds.filter((userId) =>
-      prevItem.to.includes(userId)
+    const existUserIds = userIds.filter(
+      (userId) => prevItem.to.includes(userId) && !prevItem.pay.includes(userId)
     );
 
     const bossItem = await updateBossItem(
@@ -124,7 +149,7 @@ const boss: MessageListener = async (msg, message) => {
   };
 
   const list = async (cmd: string): Promise<void> => {
-    if (cmd === "me") {
+    if (cmd === "me" || cmd === "") {
       const bossItems = await getAllBossItems(guild.id);
       const myUserId = msg.author.id;
       const myBossItems = filter(
@@ -133,20 +158,62 @@ const boss: MessageListener = async (msg, message) => {
           item.from === myUserId ||
           (item.to.includes(myUserId) && !item.pay.includes(myUserId))
       );
-      const description = myBossItems
-        .map((item) => {
-          return `${item.itemId}${
-            item.price ? ` (${getDividend(item)})` : ""
-          } : ${item.itemName} <@!${item.from}>`;
-        })
-        .join("\n");
-      msg.channel.send(
-        new MessageEmbed({
-          title: `${msg.member?.displayName} Items`,
-          description,
-        })
-      );
-      return;
+      if (cmd === "me") {
+        const description = myBossItems
+          .map((item) => {
+            return `${item.itemId}${
+              item.price ? ` (${getDividend(item)})` : ""
+            } : ${item.itemName} <@!${item.from}>`;
+          })
+          .join("\n");
+        msg.channel.send(
+          new MessageEmbed({
+            title: `${msg.member?.displayName}의 아이템`,
+            description,
+          })
+        );
+        return;
+      }
+      if (cmd === "") {
+        const [itemsToGive, itemsToGet] = partition(
+          filter(myBossItems, (item) => !!item.price),
+          (item) => item.from === myUserId
+        );
+
+        const sumToGive: { [userId: string]: number } = {};
+        const sumToGet: { [userId: string]: number } = {};
+
+        forEach(itemsToGive, (item) => {
+          forEach(item.to, (toUser) => {
+            if (item.pay.includes(toUser)) return;
+            const prevPrice = sumToGive[toUser];
+            const dividend = getDividend(item);
+            sumToGive[toUser] = dividend + (prevPrice ?? 0);
+          });
+        });
+
+        forEach(itemsToGet, (item) => {
+          if (item.pay.includes(myUserId)) return;
+          const fromUser = item.from;
+          const prevPrice = sumToGet[fromUser];
+          const dividend = getDividend(item);
+          sumToGet[fromUser] = dividend + (prevPrice ?? 0);
+        });
+
+        const giveDescription = map(sumToGive, (amount, userId) => {
+          return `<@!${userId}> ${amount}`;
+        }).join("\n");
+        const getDescription = map(sumToGet, (amount, userId) => {
+          return `<@!${userId}> ${amount}`;
+        }).join("\n");
+        msg.channel.send(
+          new MessageEmbed({
+            title: `${msg.member?.displayName}이 받을/줄 돈`,
+            description: `받을 돈\n${getDescription}\n줄 돈\n${giveDescription}`,
+          })
+        );
+        return;
+      }
     }
 
     if (cmd === "all") {
@@ -158,7 +225,7 @@ const boss: MessageListener = async (msg, message) => {
         .join("\n");
       msg.channel.send(
         new MessageEmbed({
-          title: `All Items`,
+          title: `모든 아이템`,
           description,
         })
       );

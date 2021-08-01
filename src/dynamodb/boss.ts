@@ -79,6 +79,7 @@ export const addBossItem = async (
     logger.error("Boss: addBossItem Error", err);
   }
 };
+
 export const getAllBossItems = async (guild: string): Promise<BossItem[]> => {
   try {
     const input: ScanCommandInput = {
