@@ -8,14 +8,15 @@ import {
   addBossItem,
   BossItem,
   updateBossItem,
+  deleteBossItem,
 } from "../dynamodb/boss";
 
 import { MessageListener } from "../helpers/addMessageListener";
 import logger from "../helpers/logger";
 
 const boss: MessageListener = async (msg, message) => {
-  const getUserId = (rawString: string): string | null => {
-    const result = rawString.match(/^<@!([0-9]+)>$/i);
+  const getUserId = (cmd: string): string | null => {
+    const result = cmd.match(/^<@!([0-9]+)>$/i);
     if (!result) return null;
     return result[1];
   };
@@ -50,28 +51,80 @@ const boss: MessageListener = async (msg, message) => {
     msg.channel.send(`[${itemId}]: ${itemName} 등록 완료!`);
   };
 
-  const remove = (rawString: string): void => {};
+  const remove = async (cmd: string): Promise<void> => {
+    const itemId = cmd;
+    const bossItem = await getBossItem(guild.id, itemId);
+    if (!bossItem) {
+      msg.channel.send("해당하는 아이템이 없습니다.");
+      return;
+    }
+    if (bossItem.from !== msg.author.id) {
+      msg.channel.send(`[${itemId}]: 권한이 없습니다.`);
+      return;
+    }
 
-  const updatePrice = async (rawString: string): Promise<void> => {
-    const words = rawString.split(" ");
+    const success = await deleteBossItem(guild.id, itemId);
+    if (success) msg.channel.send(`[${itemId}]: 삭제 완료`);
+  };
+
+  const updatePrice = async (cmd: string): Promise<void> => {
+    const words = cmd.split(" ");
     if (words.length < 2) return;
     const itemId = words[0];
     const price = parseInt(words[1], 10);
     const commission = words?.[2] ? parseFloat(words?.[2]) : undefined;
-    const bossItem = await updateBossItem(guild.id, itemId, {
-      price,
-      commission,
-    });
+    const bossItem = await updateBossItem(
+      guild.id,
+      itemId,
+      {
+        price,
+        commission,
+      },
+      {}
+    );
     if (bossItem)
       msg.channel.send(
         `[${itemId}]: 가격 등록 완료! (인당 ${getDividend(bossItem)})`
       );
   };
 
-  const pay = (rawString: string): void => {};
+  const pay = async (cmd: string): Promise<void> => {
+    const [itemId, ...users] = cmd.split(" ");
+    if (getUserId(itemId)) {
+      return;
+    }
 
-  const list = async (rawString: string): Promise<void> => {
-    if (rawString === "me") {
+    const userIds = chain(users)
+      .map((user) => {
+        return getUserId(user);
+      })
+      .compact()
+      .value();
+    if (userIds.length === 0) return;
+
+    const prevItem = await getBossItem(guild.id, itemId);
+    if (!prevItem) return;
+
+    if (prevItem.from !== msg.author.id) {
+      msg.channel.send(`[${itemId}]: 권한이 없습니다.`);
+      return;
+    }
+    const existUserIds = userIds.filter((userId) =>
+      prevItem.to.includes(userId)
+    );
+
+    const bossItem = await updateBossItem(
+      guild.id,
+      itemId,
+      {},
+      { pay: existUserIds }
+    );
+    if (bossItem)
+      msg.channel.send(`[${itemId}]: ${existUserIds.length}명 상환 완료!`);
+  };
+
+  const list = async (cmd: string): Promise<void> => {
+    if (cmd === "me") {
       const bossItems = await getAllBossItems(guild.id);
       const myUserId = msg.author.id;
       const myBossItems = filter(
@@ -96,7 +149,7 @@ const boss: MessageListener = async (msg, message) => {
       return;
     }
 
-    if (rawString === "all") {
+    if (cmd === "all") {
       const bossItems = await getAllBossItems(guild.id);
       const description = bossItems
         .map((item) => {
@@ -112,12 +165,13 @@ const boss: MessageListener = async (msg, message) => {
       return;
     }
 
-    const itemId = rawString;
+    const itemId = cmd;
     const bossItem = await getBossItem(guild.id, itemId);
     if (!bossItem) {
-      msg.channel.send("아이템을 찾을 수 없습니다!");
+      msg.channel.send("해당하는 아이템이 없습니다.");
       return;
     }
+
     const description = [
       `From: <@!${bossItem.from}>`,
       `To: ${bossItem.to

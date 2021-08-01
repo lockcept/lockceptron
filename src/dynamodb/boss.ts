@@ -1,5 +1,7 @@
 import {
   AttributeValue,
+  DeleteItemCommand,
+  DeleteItemCommandInput,
   GetItemCommand,
   GetItemCommandInput,
   PutItemCommand,
@@ -9,7 +11,7 @@ import {
   UpdateItemCommand,
   UpdateItemCommandInput,
 } from "@aws-sdk/client-dynamodb";
-import { compact } from "lodash";
+import { compact, update } from "lodash";
 import dynamoClient from ".";
 import { tableNameByStage } from "../config";
 import logger from "../helpers/logger";
@@ -120,24 +122,66 @@ export const getBossItem = async (
   }
 };
 
+export const deleteBossItem = async (
+  guild: string,
+  itemId: string
+): Promise<boolean> => {
+  try {
+    const input: DeleteItemCommandInput = {
+      TableName: tableName,
+      Key: { guild: { S: guild }, item: { S: itemId } },
+    };
+    const command = new DeleteItemCommand(input);
+    await dynamoClient.send(command);
+    logger.log("Boss: deleteBossItem", { guild, itemId });
+    return true;
+  } catch (err) {
+    logger.error("Boss: updateBossItem Error", err);
+    return false;
+  }
+};
+
 export const updateBossItem = async (
   guild: string,
   itemId: string,
-  set: Partial<BossItem>
+  set: Partial<BossItem>,
+  add: Partial<BossItem>
 ): Promise<BossItem | null> => {
   try {
     const { price, commission } = set;
-    const { updateExpression, expressionAttributeValues } = getExpression({
-      price: price ? { N: price.toString() } : null,
-      commission: commission ? { N: commission.toString() } : null,
-    });
-    if (!updateExpression) return null;
+    const { pay } = add;
+    const {
+      updateExpression: setExpression,
+      expressionAttributeValues: setValues,
+    } = getExpression(
+      {
+        price: price ? { N: price.toString() } : null,
+        commission: commission ? { N: commission.toString() } : null,
+      },
+      "SET",
+      "s"
+    );
+    const {
+      updateExpression: addExpression,
+      expressionAttributeValues: addValues,
+    } = getExpression(
+      {
+        pay: pay ? { SS: pay } : null,
+      },
+      "ADD",
+      "a"
+    );
+
+    const updateExpression = [];
+    if (setExpression) updateExpression.push(`SET ${setExpression}`);
+    if (addExpression) updateExpression.push(`ADD ${addExpression}`);
+    if (!updateExpression.length) return null;
 
     const input: UpdateItemCommandInput = {
       TableName: tableName,
       Key: { guild: { S: guild }, item: { S: itemId } },
-      UpdateExpression: `SET ${updateExpression}`,
-      ExpressionAttributeValues: expressionAttributeValues,
+      UpdateExpression: updateExpression.join(" "),
+      ExpressionAttributeValues: { ...setValues, ...addValues },
       ReturnValues: "ALL_NEW",
     };
     const command = new UpdateItemCommand(input);
