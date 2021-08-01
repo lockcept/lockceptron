@@ -5,8 +5,9 @@ import { nolookalikes } from "nanoid-dictionary";
 import {
   getAllBossItems,
   getBossItem,
-  addItem,
+  addBossItem,
   BossItem,
+  updateBossItem,
 } from "../dynamodb/boss";
 
 import { MessageListener } from "../helpers/addMessageListener";
@@ -22,7 +23,7 @@ const boss: MessageListener = async (msg, message) => {
   const getDividend = (bossItem: BossItem): number => {
     const peopleCnt = bossItem.to.length + 1;
     const { price = 0, commission = 1 } = bossItem;
-    return (price * commission) / peopleCnt;
+    return Math.round((price * commission) / peopleCnt);
   };
 
   const { guild } = msg;
@@ -45,12 +46,30 @@ const boss: MessageListener = async (msg, message) => {
     const itemId = customAlphabet(nolookalikes, 6)();
     const itemName = item.substring(0, 20);
     const fromUser = msg.author.id;
-    addItem(guild.id, itemId, itemName, fromUser, userIds);
+    addBossItem(guild.id, itemId, itemName, fromUser, userIds);
     msg.channel.send(`[${itemId}]: ${itemName} 등록 완료!`);
   };
+
   const remove = (rawString: string): void => {};
-  const price = (rawString: string): void => {};
+
+  const updatePrice = async (rawString: string): Promise<void> => {
+    const words = rawString.split(" ");
+    if (words.length < 2) return;
+    const itemId = words[0];
+    const price = parseInt(words[1], 10);
+    const commission = words?.[2] ? parseFloat(words?.[2]) : undefined;
+    const bossItem = await updateBossItem(guild.id, itemId, {
+      price,
+      commission,
+    });
+    if (bossItem)
+      msg.channel.send(
+        `[${itemId}]: 가격 등록 완료! (인당 ${getDividend(bossItem)})`
+      );
+  };
+
   const pay = (rawString: string): void => {};
+
   const list = async (rawString: string): Promise<void> => {
     if (rawString === "me") {
       const bossItems = await getAllBossItems(guild.id);
@@ -64,8 +83,8 @@ const boss: MessageListener = async (msg, message) => {
       const description = myBossItems
         .map((item) => {
           return `${item.itemId}${
-            item.price ? ` ${getDividend(item)}` : ""
-          } - ${item.itemName} (<@!${item.from}>)`;
+            item.price ? ` (${getDividend(item)})` : ""
+          } : ${item.itemName} <@!${item.from}>`;
         })
         .join("\n");
       msg.channel.send(
@@ -76,11 +95,12 @@ const boss: MessageListener = async (msg, message) => {
       );
       return;
     }
+
     if (rawString === "all") {
       const bossItems = await getAllBossItems(guild.id);
       const description = bossItems
         .map((item) => {
-          return `${item.itemId}: ${item.itemName} (<@!${item.from}>)`;
+          return `${item.itemId}: ${item.itemName} <@!${item.from}>`;
         })
         .join("\n");
       msg.channel.send(
@@ -91,6 +111,7 @@ const boss: MessageListener = async (msg, message) => {
       );
       return;
     }
+
     const itemId = rawString;
     const bossItem = await getBossItem(guild.id, itemId);
     if (!bossItem) {
@@ -105,6 +126,7 @@ const boss: MessageListener = async (msg, message) => {
         })
         .join(" ")}`,
       `Price: ${bossItem.price ?? "X"}`,
+      `Price per people: ${getDividend(bossItem) || "X"}`,
       `Paid: ${
         bossItem.pay.length
           ? bossItem.pay
@@ -135,7 +157,7 @@ const boss: MessageListener = async (msg, message) => {
         remove(cmd.substring(7));
         break;
       case "price":
-        price(cmd.substring(6));
+        updatePrice(cmd.substring(6));
         break;
       case "pay":
         pay(cmd.substring(4));
