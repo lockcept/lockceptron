@@ -305,6 +305,20 @@ const boss: MessageListener = async (msg, message) => {
     );
   };
 
+  const rename = async (cmd: string): Promise<void> => {
+    const [itemId, newName] = cmd.split(" ");
+    if (!itemId || !newName) return;
+    const bossItem = await updateBossItem(
+      guild.id,
+      itemId,
+      { itemName: newName },
+      {}
+    );
+    if (bossItem) {
+      msg.channel.send(`[${bossItem.itemId}]: ${bossItem.itemName} 개명 완료`);
+    }
+  };
+
   if (message.startsWith("boss ")) {
     const cmd = message.substring(5);
     const action = cmd.split(" ")[0];
@@ -327,6 +341,9 @@ const boss: MessageListener = async (msg, message) => {
         break;
       case "list":
         await list(cmd.substring(5));
+        break;
+      case "rename":
+        await rename(cmd.substring(7));
         break;
       default:
         logger.log("Boss: Wrong action", { cmd });

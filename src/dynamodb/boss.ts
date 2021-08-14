@@ -149,13 +149,14 @@ export const updateBossItem = async (
   add: Partial<BossItem>
 ): Promise<BossItem | null> => {
   try {
-    const { price, commission } = set;
+    const { itemName, price, commission } = set;
     const { pay } = add;
     const {
       updateExpression: setExpression,
       expressionAttributeValues: setValues,
     } = getExpression(
       {
+        itemName: itemName ? { S: itemName } : null,
         price: price ? { N: price.toString() } : null,
         commission: commission ? { N: commission.toString() } : null,
       },
