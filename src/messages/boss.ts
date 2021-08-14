@@ -234,7 +234,10 @@ const boss: MessageListener = async (msg, message) => {
             if (item.pay.includes(toUser)) return;
             const prevPrice = sumToGive[toUser];
             const dividend = getDividend(item);
-            sumToGive[toUser] = dividend + (prevPrice ?? 0);
+            sumToGive[toUser] = round(
+              dividend + (prevPrice ?? 0),
+              ROUND_PRECISION
+            );
           });
         });
 
