@@ -13,6 +13,7 @@ import {
 } from "../dynamodb/boss";
 
 import { MessageListener } from "../helpers/addMessageListener";
+import escapeDiscord from "../helpers/escape";
 import logger from "../helpers/logger";
 
 const boss: MessageListener = async (msg, message) => {
@@ -72,7 +73,7 @@ const boss: MessageListener = async (msg, message) => {
     const itemId = customAlphabet(nolookalikes, 6)();
     const itemName = item.substring(0, 20);
     await addBossItem(guild.id, itemId, itemName, fromUser, userIds);
-    msg.channel.send(`[${itemId}]: ${itemName} 등록 완료!`);
+    msg.channel.send(escapeDiscord(`[${itemId}]: ${itemName} 등록 완료!`));
   };
 
   const remove = async (cmd: string): Promise<void> => {
@@ -108,9 +109,11 @@ const boss: MessageListener = async (msg, message) => {
     );
     if (bossItem)
       msg.channel.send(
-        `[${itemId}]: ${bossItem.itemName} 가격 등록 완료! (인당 ${getDividend(
-          bossItem
-        )})`
+        escapeDiscord(
+          `[${itemId}]: ${
+            bossItem.itemName
+          } 가격 등록 완료! (인당 ${getDividend(bossItem)})`
+        )
       );
   };
 
@@ -142,7 +145,9 @@ const boss: MessageListener = async (msg, message) => {
         map(paidItems, (item) => {
           if (item.to.length === item.pay.length)
             msg.channel.send(
-              `[${item.itemId}] ${item.itemName} 상환이 완료되어 삭제합니다.`
+              escapeDiscord(
+                `[${item.itemId}] ${item.itemName} 상환이 완료되어 삭제합니다.`
+              )
             );
         });
       }
@@ -176,12 +181,16 @@ const boss: MessageListener = async (msg, message) => {
     );
     if (bossItem) {
       msg.channel.send(
-        `[${itemId}]: ${bossItem.itemName} ${existUserIds.length}명 상환 완료!`
+        escapeDiscord(
+          `[${itemId}]: ${bossItem.itemName} ${existUserIds.length}명 상환 완료!`
+        )
       );
       if (bossItem.to.length === bossItem.pay.length) {
         await deleteBossItem(guild.id, bossItem.itemId);
         msg.channel.send(
-          `[${itemId}] ${bossItem.itemName} 상환이 완료되어 삭제합니다.`
+          escapeDiscord(
+            `[${itemId}] ${bossItem.itemName} 상환이 완료되어 삭제합니다.`
+          )
         );
       }
     }
@@ -265,7 +274,7 @@ const boss: MessageListener = async (msg, message) => {
       msg.channel.send(
         new MessageEmbed({
           title: `모든 아이템`,
-          description,
+          description: escapeDiscord(description),
         })
       );
       return;
@@ -300,7 +309,7 @@ const boss: MessageListener = async (msg, message) => {
     msg.channel.send(
       new MessageEmbed({
         title: `${bossItem.itemName} (${bossItem.itemId})`,
-        description,
+        description: escapeDiscord(description),
       })
     );
   };
@@ -315,7 +324,9 @@ const boss: MessageListener = async (msg, message) => {
       {}
     );
     if (bossItem) {
-      msg.channel.send(`[${bossItem.itemId}]: ${bossItem.itemName} 개명 완료`);
+      msg.channel.send(
+        escapeDiscord(`[${bossItem.itemId}]: ${bossItem.itemName} 개명 완료`)
+      );
     }
   };
 
