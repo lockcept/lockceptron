@@ -52,7 +52,7 @@ const boss: MessageListener = async (msg, message) => {
     );
   };
 
-  const add = (cmd: string): void => {
+  const add = async (cmd: string): Promise<void> => {
     const [item, ...users] = cmd.split(" ");
     if (getUserId(item)) {
       return;
@@ -71,7 +71,7 @@ const boss: MessageListener = async (msg, message) => {
 
     const itemId = customAlphabet(nolookalikes, 6)();
     const itemName = item.substring(0, 20);
-    addBossItem(guild.id, itemId, itemName, fromUser, userIds);
+    await addBossItem(guild.id, itemId, itemName, fromUser, userIds);
     msg.channel.send(`[${itemId}]: ${itemName} 등록 완료!`);
   };
 
@@ -314,16 +314,16 @@ const boss: MessageListener = async (msg, message) => {
         help();
         break;
       case "add":
-        add(cmd.substring(4));
+        await add(cmd.substring(4));
         break;
       case "remove":
-        remove(cmd.substring(7));
+        await remove(cmd.substring(7));
         break;
       case "price":
-        updatePrice(cmd.substring(6));
+        await updatePrice(cmd.substring(6));
         break;
       case "pay":
-        pay(cmd.substring(4));
+        await pay(cmd.substring(4));
         break;
       case "list":
         await list(cmd.substring(5));
