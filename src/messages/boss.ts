@@ -25,7 +25,11 @@ const boss: MessageListener = async (msg, message) => {
   const getDividend = (bossItem: BossItem): number => {
     const peopleCnt = bossItem.to.length + 1;
     const { price = 0, commission = 1 } = bossItem;
-    return Math.round((price * commission) / peopleCnt);
+    const roundPricision = 10;
+    return (
+      Math.round((roundPricision * (price * commission)) / peopleCnt) /
+      roundPricision
+    );
   };
 
   const { guild } = msg;
@@ -104,7 +108,9 @@ const boss: MessageListener = async (msg, message) => {
     );
     if (bossItem)
       msg.channel.send(
-        `[${itemId}]: 가격 등록 완료! (인당 ${getDividend(bossItem)})`
+        `[${itemId}]: ${bossItem.itemName} 가격 등록 완료! (인당 ${getDividend(
+          bossItem
+        )})`
       );
   };
 
