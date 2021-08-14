@@ -137,6 +137,7 @@ const boss: MessageListener = async (msg, message) => {
       const amount = chain(paidItems)
         .map((item) => getDividend(item))
         .sum()
+        .round(ROUND_PRECISION)
         .value();
       if (amount) {
         msg.channel.send(`<@!${toUser}>에게 ${amount} 상환 완료!`);
