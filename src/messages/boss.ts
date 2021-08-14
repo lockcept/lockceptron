@@ -1,5 +1,5 @@
 import { MessageEmbed } from "discord.js";
-import { chain, filter, forEach, map, partition } from "lodash";
+import { chain, compact, filter, forEach, map, partition } from "lodash";
 import { customAlphabet } from "nanoid";
 import { nolookalikes } from "nanoid-dictionary";
 import { helpDoc } from "../config";
@@ -114,7 +114,7 @@ const boss: MessageListener = async (msg, message) => {
       );
   };
 
-  const payAll = async (from: string, to: string): Promise<number> => {
+  const payAll = async (from: string, to: string): Promise<BossItem[]> => {
     const allBossItems = await getAllBossItems(guild.id);
     const validBossItems = allBossItems.filter(
       (bossItem) =>
@@ -124,12 +124,7 @@ const boss: MessageListener = async (msg, message) => {
       return updateBossItem(guild.id, item.itemId, {}, { pay: [to] });
     });
     const paidItems = await Promise.all(payTasks);
-    const amount = chain(paidItems)
-      .compact()
-      .map((item) => getDividend(item))
-      .sum()
-      .value();
-    return amount;
+    return compact(paidItems);
   };
 
   const pay = async (cmd: string): Promise<void> => {
@@ -137,9 +132,20 @@ const boss: MessageListener = async (msg, message) => {
     const checkIfUser = getUserId(itemId);
     if (checkIfUser) {
       const toUser = checkIfUser;
-      const paidAmount = await payAll(msg.author.id, toUser);
-      if (paidAmount)
-        msg.channel.send(`<@!${toUser}>에게 ${paidAmount} 상환 완료!`);
+      const paidItems = await payAll(msg.author.id, toUser);
+      const amount = chain(paidItems)
+        .map((item) => getDividend(item))
+        .sum()
+        .value();
+      if (amount) {
+        msg.channel.send(`<@!${toUser}>에게 ${amount} 상환 완료!`);
+        map(paidItems, (item) => {
+          if (item.to.length === item.pay.length)
+            msg.channel.send(
+              `[${item.itemId}] ${item.itemName} 상환이 완료되어 삭제합니다.`
+            );
+        });
+      }
       return;
     }
 
@@ -168,8 +174,17 @@ const boss: MessageListener = async (msg, message) => {
       {},
       { pay: existUserIds }
     );
-    if (bossItem)
-      msg.channel.send(`[${itemId}]: ${existUserIds.length}명 상환 완료!`);
+    if (bossItem) {
+      msg.channel.send(
+        `[${itemId}]: ${bossItem.itemName} ${existUserIds.length}명 상환 완료!`
+      );
+      if (bossItem.to.length === bossItem.pay.length) {
+        await deleteBossItem(guild.id, bossItem.itemId);
+        msg.channel.send(
+          `[${itemId}] ${bossItem.itemName} 상환이 완료되어 삭제합니다.`
+        );
+      }
+    }
   };
 
   const list = async (cmd: string): Promise<void> => {
