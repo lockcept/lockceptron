@@ -247,7 +247,7 @@ const boss: MessageListener = async (msg, message) => {
         }).join("\n");
         msg.channel.send(
           new MessageEmbed({
-            title: `${msg.member?.displayName}이 받을/줄 돈`,
+            title: `${msg.member?.displayName} 받을/줄 돈`,
             description: `받을 돈\n${getDescription}\n줄 돈\n${giveDescription}`,
           })
         );
