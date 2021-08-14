@@ -217,7 +217,7 @@ const boss: MessageListener = async (msg, message) => {
         msg.channel.send(
           new MessageEmbed({
             title: `${msg.member?.displayName}의 아이템`,
-            description,
+            description: escapeDiscord(description),
           })
         );
         return;
