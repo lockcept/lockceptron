@@ -1,5 +1,5 @@
 import { MessageEmbed } from "discord.js";
-import { chain, compact, filter, forEach, map, partition } from "lodash";
+import { chain, compact, filter, forEach, map, partition, round } from "lodash";
 import { customAlphabet } from "nanoid";
 import { nolookalikes } from "nanoid-dictionary";
 import { helpDoc } from "../config";
@@ -26,11 +26,7 @@ const boss: MessageListener = async (msg, message) => {
   const getDividend = (bossItem: BossItem): number => {
     const peopleCnt = bossItem.to.length + 1;
     const { price = 0, commission = 1 } = bossItem;
-    const roundPricision = 10;
-    return (
-      Math.round((roundPricision * (price * commission)) / peopleCnt) /
-      roundPricision
-    );
+    return round((price * commission) / peopleCnt, 1);
   };
 
   const { guild } = msg;
