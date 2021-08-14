@@ -2,6 +2,7 @@ import { MessageEmbed } from "discord.js";
 import { chain, filter, forEach, map, partition } from "lodash";
 import { customAlphabet } from "nanoid";
 import { nolookalikes } from "nanoid-dictionary";
+import { helpDoc } from "../config";
 import {
   getAllBossItems,
   getBossItem,
@@ -29,6 +30,23 @@ const boss: MessageListener = async (msg, message) => {
 
   const { guild } = msg;
   if (!guild) throw Error("guild not found");
+
+  /* command list */
+  const help = (): void => {
+    msg.channel.send(
+      new MessageEmbed({
+        title: "tron boss 커맨드",
+        description: [
+          "tron boss add",
+          "tron boss price",
+          "tron boss list",
+          "tron boss pay",
+          "tron boss remove",
+          `자세한 사항은 [Command DOCS](${helpDoc})`,
+        ].join("\n"),
+      })
+    );
+  };
 
   const add = (cmd: string): void => {
     const [item, ...users] = cmd.split(" ");
@@ -271,6 +289,9 @@ const boss: MessageListener = async (msg, message) => {
     const action = cmd.split(" ")[0];
 
     switch (action) {
+      case "help":
+        help();
+        break;
       case "add":
         add(cmd.substring(4));
         break;
