@@ -16,6 +16,8 @@ import { MessageListener } from "../helpers/addMessageListener";
 import escapeDiscord from "../helpers/escape";
 import logger from "../helpers/logger";
 
+const ROUND_PRECISION = 1;
+
 const boss: MessageListener = async (msg, message) => {
   const getUserId = (cmd: string): string | null => {
     const result = cmd.match(/^<@!([0-9]+)>$/i);
@@ -26,7 +28,7 @@ const boss: MessageListener = async (msg, message) => {
   const getDividend = (bossItem: BossItem): number => {
     const peopleCnt = bossItem.to.length + 1;
     const { price = 0, commission = 1 } = bossItem;
-    return round((price * commission) / peopleCnt, 1);
+    return round((price * commission) / peopleCnt, ROUND_PRECISION);
   };
 
   const { guild } = msg;
@@ -241,7 +243,10 @@ const boss: MessageListener = async (msg, message) => {
           const fromUser = item.from;
           const prevPrice = sumToGet[fromUser];
           const dividend = getDividend(item);
-          sumToGet[fromUser] = dividend + (prevPrice ?? 0);
+          sumToGet[fromUser] = round(
+            dividend + (prevPrice ?? 0),
+            ROUND_PRECISION
+          );
         });
 
         const giveDescription = map(sumToGive, (amount, userId) => {
