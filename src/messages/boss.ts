@@ -119,7 +119,10 @@ const boss: MessageListener = async (msg, message) => {
     const allBossItems = await getAllBossItems(guild.id);
     const validBossItems = allBossItems.filter(
       (bossItem) =>
-        !!bossItem.price && bossItem.from === from && bossItem.to.includes(to)
+        !!bossItem.price &&
+        bossItem.from === from &&
+        bossItem.to.includes(to) &&
+        !bossItem.pay.includes(to)
     );
     const payTasks = validBossItems.map((item) => {
       return updateBossItem(guild.id, item.itemId, {}, { pay: [to] });
