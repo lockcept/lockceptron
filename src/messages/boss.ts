@@ -350,6 +350,7 @@ const boss: MessageListener = async (msg, message) => {
         await add(cmd.substring(4));
         break;
       case "remove":
+      case "delete":
         await remove(cmd.substring(7));
         break;
       case "price":
