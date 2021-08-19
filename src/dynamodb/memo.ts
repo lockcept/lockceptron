@@ -10,13 +10,13 @@ import logger from "../helpers/logger";
 
 const tableName = tableNameByStage("memo");
 
-export const saveMemo = async (
+export const putMemoItem = async (
   guild: string,
   user: string,
   content: string
 ): Promise<void> => {
   try {
-    logger.log("Memo: saveMemo", { guild, user, content });
+    logger.log("Memo: putMemoItem", { guild, user, content });
     const input: PutItemCommandInput = {
       TableName: tableName,
       Item: {
@@ -28,11 +28,11 @@ export const saveMemo = async (
     const command = new PutItemCommand(input);
     await dynamoClient.send(command);
   } catch (err) {
-    logger.error("Memo: saveMemo Error", err);
+    logger.error("Memo: putMemoItem Error", err);
   }
 };
 
-export const loadMemo = async (
+export const getMemoItem = async (
   guild: string,
   user: string
 ): Promise<string | null> => {
@@ -44,11 +44,11 @@ export const loadMemo = async (
     const command = new GetItemCommand(input);
     const output = await dynamoClient.send(command);
     const memo = output.Item?.content.S;
-    logger.log("Memo: loadMemo", { guild, user, memo });
+    logger.log("Memo: getMemoItem", { guild, user, memo });
     if (!memo) return null;
     return memo;
   } catch (err) {
-    logger.error("Memo: loadMemo Error", err);
+    logger.error("Memo: getMemoItem Error", err);
     return null;
   }
 };

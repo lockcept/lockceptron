@@ -6,7 +6,7 @@ import { sendDebug } from "../services/debugService";
 const debug: MessageListener = async (msg, message) => {
   if (stage !== "dev") return;
   if (message === "debug") {
-    sendDebug(msg);
+    sendDebug(msg.channel);
   }
 };
 
