@@ -1,15 +1,10 @@
-import discordClient from "../app";
-import { loadMemo, saveMemo } from "../dynamodb/memo";
 import { MessageListener } from "../helpers/addMessageListener";
+import { loadMemo } from "../services/memoService";
 
 const memo: MessageListener = async (msg, message) => {
-  if (msg.author.id === discordClient.user?.id) return;
+  if (!msg.guild) throw Error("guild not found");
   if (message === "memo") {
-    if (!msg.guild) throw Error("guild not found");
-    const load = await loadMemo(msg.guild.id, msg.author.id);
-    if (!load) return;
-    msg.channel.send(load);
-    return;
+    loadMemo(msg);
   }
   if (message.startsWith("memo")) {
     if (!msg.guild) throw Error("guild not found");
