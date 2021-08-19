@@ -196,7 +196,8 @@ export const payBossItem = async (
 export const receiptBoss = async (
   channel: DiscordChannel,
   guild: string,
-  userId: string
+  userId: string,
+  displayName?: string
 ) => {
   const bossItems = await scanAllBossItems(guild);
   const myBossItems = filter(
@@ -240,7 +241,7 @@ export const receiptBoss = async (
 
   await channel.send(
     new MessageEmbed({
-      title: `<!@${userId}> 영수증`,
+      title: `${[displayName, "영수증"].join(" ")}`,
       description: `받을 돈\n${getDescription}\n줄 돈\n${giveDescription}`,
     })
   );
@@ -249,7 +250,8 @@ export const receiptBoss = async (
 export const listBoss = async (
   channel: DiscordChannel,
   guild: string,
-  userId?: string
+  userId?: string,
+  displayName?: string
 ) => {
   const bossItems = await scanAllBossItems(guild);
 
@@ -284,7 +286,7 @@ export const listBoss = async (
     .join("\n");
   await channel.send(
     new MessageEmbed({
-      title: `<!@${userId}>의 아이템`,
+      title: `${[displayName, "잔여 아이템"].join(" ")}`,
       description: escapeDiscord(description),
     })
   );
