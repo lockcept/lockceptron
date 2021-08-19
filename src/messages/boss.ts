@@ -144,7 +144,7 @@ const boss: MessageListener = async (msg, message) => {
         .value();
       if (amount) {
         msg.channel.send(`<@!${toUser}>에게 ${amount} 상환 완료!`);
-        Promise.all(
+        await Promise.all(
           map(paidItems, async (item) => {
             if (item.to.length === item.pay.length) {
               await deleteBossItem(guild.id, item.itemId);
