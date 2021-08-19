@@ -98,12 +98,22 @@ const boss: MessageListener = async (msg, message) => {
       return;
     }
 
-    await receiptBoss(msg.channel, guild.id, msg.author.id);
+    await receiptBoss(
+      msg.channel,
+      guild.id,
+      msg.author.id,
+      msg.member?.displayName
+    );
   };
 
   const list = async (cmd: string): Promise<void> => {
     if (cmd === "") {
-      await listBoss(msg.channel, guild.id, msg.author.id);
+      await listBoss(
+        msg.channel,
+        guild.id,
+        msg.author.id,
+        msg.member?.displayName
+      );
       return;
     }
 
