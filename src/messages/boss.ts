@@ -144,14 +144,18 @@ const boss: MessageListener = async (msg, message) => {
         .value();
       if (amount) {
         msg.channel.send(`<@!${toUser}>에게 ${amount} 상환 완료!`);
-        map(paidItems, (item) => {
-          if (item.to.length === item.pay.length)
-            msg.channel.send(
-              escapeDiscord(
-                `[${item.itemId}] ${item.itemName} 상환이 완료되어 삭제합니다.`
-              )
-            );
-        });
+        Promise.all(
+          map(paidItems, async (item) => {
+            if (item.to.length === item.pay.length) {
+              await deleteBossItem(guild.id, item.itemId);
+              msg.channel.send(
+                escapeDiscord(
+                  `[${item.itemId}] ${item.itemName} 상환이 완료되어 삭제합니다.`
+                )
+              );
+            }
+          })
+        );
       }
       return;
     }
