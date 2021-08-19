@@ -1,14 +1,22 @@
 import { MessageListener } from "../helpers/addMessageListener";
-import { loadMemo } from "../services/memoService";
+import substring from "../helpers/substring";
+import { loadMemo, saveMemo } from "../services/memoService";
 
 const memo: MessageListener = async (msg, message) => {
   if (!msg.guild) throw Error("guild not found");
+
   if (message === "memo") {
-    loadMemo(msg);
+    await loadMemo(msg.channel, msg.guild.id, msg.author.id);
+    return;
   }
+
   if (message.startsWith("memo")) {
-    if (!msg.guild) throw Error("guild not found");
-    saveMemo(msg.guild.id, msg.author.id, message.substring(5));
+    await saveMemo(
+      msg.channel,
+      msg.guild.id,
+      msg.author.id,
+      substring(message, "memo")
+    );
   }
 };
 
