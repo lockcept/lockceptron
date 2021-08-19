@@ -54,7 +54,7 @@ const getBossItemFromItem = (
   return { guild, itemId, itemName, from, to, pay, price, commission };
 };
 
-export const addBossItem = async (
+export const putBossItem = async (
   guild: string,
   itemId: string,
   itemName: string,
@@ -62,7 +62,7 @@ export const addBossItem = async (
   to: string[]
 ): Promise<void> => {
   try {
-    logger.log("Boss: addBossItem", { guild, itemId, itemName, from, to });
+    logger.log("Boss: putBossItem", { guild, itemId, itemName, from, to });
     const input: PutItemCommandInput = {
       TableName: tableName,
       Item: {
@@ -76,11 +76,11 @@ export const addBossItem = async (
     const command = new PutItemCommand(input);
     await dynamoClient.send(command);
   } catch (err) {
-    logger.error("Boss: addBossItem Error", err);
+    logger.error("Boss: putBossItem Error", err);
   }
 };
 
-export const getAllBossItems = async (guild: string): Promise<BossItem[]> => {
+export const scanAllBossItems = async (guild: string): Promise<BossItem[]> => {
   try {
     const input: ScanCommandInput = {
       TableName: tableName,
@@ -94,10 +94,10 @@ export const getAllBossItems = async (guild: string): Promise<BossItem[]> => {
     const bossItems = compact(
       output.Items.map((item) => getBossItemFromItem(item))
     );
-    logger.log("Boss: getItems", { guild });
+    logger.log("Boss: scanItems", { guild });
     return bossItems;
   } catch (err) {
-    logger.error("Boss: getAllBossItems Error", err);
+    logger.error("Boss: scanAllBossItems Error", err);
     return [];
   }
 };
