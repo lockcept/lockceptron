@@ -3,7 +3,9 @@ import { discordTokenByStage } from "./config";
 import logger from "./helpers/logger";
 import main from "./main";
 
-const discordClient = new Discord.Client();
+const intents = new Discord.Intents();
+intents.add("GUILDS", "GUILD_MESSAGES");
+const discordClient = new Discord.Client({ intents });
 discordClient.login(discordTokenByStage);
 
 discordClient.on("ready", () => {

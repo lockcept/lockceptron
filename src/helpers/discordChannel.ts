@@ -1,8 +1,10 @@
 import Discord from "discord.js";
 
 type DiscordChannel =
-  | Discord.TextChannel
+  | Discord.PartialDMChannel
   | Discord.DMChannel
-  | Discord.NewsChannel;
+  | Discord.TextChannel
+  | Discord.NewsChannel
+  | Discord.ThreadChannel;
 
 export default DiscordChannel;
