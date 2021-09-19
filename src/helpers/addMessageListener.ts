@@ -13,13 +13,12 @@ const addMessageListener = (
       if (msg.author.bot) return;
       const parsedMsg = parseMessage(msg.content);
       if (!parsedMsg) return;
-      logger.log(parsedMsg, { guild: msg.guild?.id, user: msg.author.id });
       messageListener(msg, parsedMsg);
     } catch (e) {
       logger.error("addMessageListener", e);
     }
   };
-  client.on("message", wrappedListner);
+  client.on("messageCreate", wrappedListner);
 };
 
 export default addMessageListener;
