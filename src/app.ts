@@ -4,7 +4,7 @@ import logger from "./helpers/logger";
 import main from "./main";
 
 const intents = new Discord.Intents();
-intents.add("GUILDS", "GUILD_MESSAGES");
+intents.add("GUILDS", "GUILD_MESSAGES", "GUILD_MEMBERS");
 const discordClient = new Discord.Client({ intents });
 discordClient.login(discordTokenByStage);
 
