@@ -25,19 +25,21 @@ const getDividend = (bossItem: BossItem): number => {
 
 /* command list */
 export const helpBoss = async (channel: DiscordChannel) => {
-  await channel.send(
-    new MessageEmbed({
-      title: "tron boss 커맨드",
-      description: [
-        "tron boss add",
-        "tron boss price",
-        "tron boss list",
-        "tron boss pay",
-        "tron boss remove",
-        `자세한 사항은 [Command DOCS](${helpDoc})`,
-      ].join("\n"),
-    })
-  );
+  await channel.send({
+    embeds: [
+      new MessageEmbed({
+        title: "tron boss 커맨드",
+        description: [
+          "tron boss add",
+          "tron boss price",
+          "tron boss list",
+          "tron boss pay",
+          "tron boss remove",
+          `자세한 사항은 [Command DOCS](${helpDoc})`,
+        ].join("\n"),
+      }),
+    ],
+  });
 };
 
 export const addBoss = async (
@@ -239,12 +241,14 @@ export const receiptBoss = async (
     return `<@!${user}> ${amount}`;
   }).join("\n");
 
-  await channel.send(
-    new MessageEmbed({
-      title: `${[displayName, "영수증"].join(" ")}`,
-      description: `받을 돈\n${getDescription}\n줄 돈\n${giveDescription}`,
-    })
-  );
+  await channel.send({
+    embeds: [
+      new MessageEmbed({
+        title: `${[displayName, "영수증"].join(" ")}`,
+        description: `받을 돈\n${getDescription}\n줄 돈\n${giveDescription}`,
+      }),
+    ],
+  });
 };
 
 export const listBoss = async (
@@ -261,12 +265,14 @@ export const listBoss = async (
         return `${item.itemId}: ${item.itemName} <@!${item.from}>`;
       })
       .join("\n");
-    await channel.send(
-      new MessageEmbed({
-        title: `모든 아이템`,
-        description: escapeDiscord(description),
-      })
-    );
+    await channel.send({
+      embeds: [
+        new MessageEmbed({
+          title: `모든 아이템`,
+          description: escapeDiscord(description),
+        }),
+      ],
+    });
     return;
   }
 
@@ -284,12 +290,14 @@ export const listBoss = async (
       } <@!${item.from}>`;
     })
     .join("\n");
-  await channel.send(
-    new MessageEmbed({
-      title: `${[displayName, "잔여 아이템"].join(" ")}`,
-      description: escapeDiscord(description),
-    })
-  );
+  await channel.send({
+    embeds: [
+      new MessageEmbed({
+        title: `${[displayName, "잔여 아이템"].join(" ")}`,
+        description: escapeDiscord(description),
+      }),
+    ],
+  });
 };
 export const infoBoss = async (
   channel: DiscordChannel,
@@ -322,12 +330,14 @@ export const infoBoss = async (
     `Price per people: ${getDividend(bossItem) || "X"}`,
   ].join("\n");
 
-  await channel.send(
-    new MessageEmbed({
-      title: `${bossItem.itemName} (${bossItem.itemId})`,
-      description: escapeDiscord(description),
-    })
-  );
+  await channel.send({
+    embeds: [
+      new MessageEmbed({
+        title: `${bossItem.itemName} (${bossItem.itemId})`,
+        description: escapeDiscord(description),
+      }),
+    ],
+  });
 };
 
 export const renameBoss = async (
