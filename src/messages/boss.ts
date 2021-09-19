@@ -1,4 +1,4 @@
-import { chain } from "lodash";
+import { chain, map } from "lodash";
 import {
   receiptBoss,
   updateBossPrice,
@@ -15,19 +15,15 @@ import {
 import { MessageListener } from "../helpers/addMessageListener";
 import logger from "../helpers/logger";
 import substring from "../helpers/substring";
+import { getRoleId, getUserId } from "../helpers/parseDiscordId";
+import { fetchMembers, getUsersFromRole } from "../helpers/getUsersFromRole";
 
 const boss: MessageListener = async (msg, message) => {
-  const getUserId = (cmd: string): string | null => {
-    const result = cmd.match(/^<@!([0-9]+)>$/i);
-    if (!result) return null;
-    return result[1];
-  };
-
   const { guild } = msg;
   if (!guild) throw Error("guild not found");
 
   const add = async (cmd: string): Promise<void> => {
-    const [item, ...users] = cmd.split(" ");
+    const [item, ...userOrRoles] = cmd.split(" ");
     if (getUserId(item)) {
       await msg.channel.send("잘못된 아이템입니다.");
       return;
@@ -35,12 +31,27 @@ const boss: MessageListener = async (msg, message) => {
 
     const fromUser = msg.author.id;
 
-    const userIds = chain(users)
-      .map((user) => {
-        return getUserId(user);
+    await fetchMembers(guild);
+
+    const userIdSet = await Promise.all(
+      userOrRoles.map(async (userOrRole) => {
+        if (getRoleId(userOrRole)) {
+          const role = getRoleId(userOrRole);
+          if (!role) return [];
+          const users = await getUsersFromRole(guild, role);
+          return map(users, (user) => user.id);
+        }
+
+        const userId = getUserId(userOrRole);
+        return userId ? [userId] : [];
       })
+    );
+
+    const userIds = chain(userIdSet)
+      .flatten()
       .compact()
       .filter((userId) => userId !== fromUser)
+      .uniq()
       .value();
     if (userIds.length === 0) {
       await msg.channel.send("유저를 입력해 주세요.");
