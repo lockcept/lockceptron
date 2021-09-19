@@ -4,7 +4,6 @@ import {
   PutLogEventsCommand,
   PutLogEventsCommandInput,
 } from "@aws-sdk/client-cloudwatch-logs";
-import util from "util";
 /* eslint-disable no-console */
 import * as AWS from "@aws-sdk/client-cloudwatch-logs";
 
