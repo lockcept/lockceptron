@@ -11,8 +11,8 @@ import {
   scanAllBossItems,
   updateBossItem,
 } from "../dynamodb/boss";
-import DiscordChannel from "../helpers/discordChannel";
 import escapeDiscord from "../helpers/escape";
+import { DiscordChannel } from "../helpers/type";
 
 const ROUND_PRECISION = 1;
 const MAX_PRICE = 1000000000000;

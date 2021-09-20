@@ -1,5 +1,5 @@
 import { MessageEmbed } from "discord.js";
-import DiscordChannel from "../helpers/discordChannel";
+import { DiscordChannel } from "../helpers/type";
 
 // eslint-disable-next-line import/prefer-default-export
 export const sendDebug = async (channel: DiscordChannel) => {

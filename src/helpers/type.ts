@@ -1,10 +1,10 @@
 import Discord from "discord.js";
 
-type DiscordChannel =
+export type DiscordChannel =
   | Discord.PartialDMChannel
   | Discord.DMChannel
   | Discord.TextChannel
   | Discord.NewsChannel
   | Discord.ThreadChannel;
 
-export default DiscordChannel;
+export type ServiceCallback = (_message: string) => Promise<void>;
