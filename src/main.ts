@@ -1,17 +1,22 @@
 import Discord from "discord.js";
-import { map } from "lodash";
-import addMessageListener from "./helpers/addMessageListener";
-import boss from "./messages/boss";
-import debug from "./messages/debug";
-import help from "./messages/help";
-import log from "./messages/log";
-import memo from "./messages/memo";
-import randomPick from "./messages/random";
+import fs from "fs";
+import addMessageListener, {
+  MessageListener,
+} from "./helpers/addMessageListener";
 
-const main = (client: Discord.Client) => {
-  const messageListeners = [log, help, memo, randomPick, boss, debug];
-  map(messageListeners, (messageListener) =>
-    addMessageListener(client, messageListener)
+const main = async (client: Discord.Client) => {
+  const messageFiles = fs
+    .readdirSync("./src/messages")
+    .filter((file) => file.endsWith(".ts"));
+
+  await Promise.all(
+    messageFiles.map(async (file) => {
+      const { default: message }: { default: MessageListener } = await import(
+        `./messages/${file}`
+      );
+      addMessageListener(client, message);
+    })
+
   );
 };
 

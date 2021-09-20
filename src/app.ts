@@ -10,8 +10,7 @@ discordClient.login(discordTokenByStage);
 
 discordClient.on("ready", () => {
   logger.log(`App: Logged in as ${discordClient.user?.tag}!`);
+  main(discordClient);
 });
-
-main(discordClient);
 
 export default discordClient;
