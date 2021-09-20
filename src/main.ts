@@ -1,8 +1,6 @@
 import Discord from "discord.js";
 import fs from "fs";
-import addMessageListener, {
-  MessageListener,
-} from "./helpers/addMessageListener";
+import addMessageListener, { MessageListener } from "./helpers/messageListener";
 
 const main = async (client: Discord.Client) => {
   const messageFiles = fs

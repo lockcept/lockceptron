@@ -1,7 +1,7 @@
-import { MessageListener } from "../helpers/addMessageListener";
+import { MessageListener } from "../helpers/messageListener";
 import logger from "../helpers/logger";
 
-const log: MessageListener = (msg, message) => {
+const log: MessageListener = async (msg, message) => {
   logger.log(message, { guild: msg.guild?.id, user: msg.author.id });
 };
 

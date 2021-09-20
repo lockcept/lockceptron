@@ -12,7 +12,7 @@ import {
   renameBoss,
 } from "../services/bossService";
 
-import { MessageListener } from "../helpers/addMessageListener";
+import { MessageListener } from "../helpers/messageListener";
 import logger from "../helpers/logger";
 import substring from "../helpers/substring";
 import { getRoleId, getUserId } from "../helpers/parseDiscordId";

@@ -1,6 +1,6 @@
 import yargsParser from "yargs-parser";
 import { pickRandomMulti, pickRandomOnce } from "../services/randomService";
-import { MessageListener } from "../helpers/addMessageListener";
+import { MessageListener } from "../helpers/messageListener";
 import logger from "../helpers/logger";
 import substring from "../helpers/substring";
 
