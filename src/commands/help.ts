@@ -19,7 +19,7 @@ const commandInteractionHandler: CommandInteractionHandler = async (
   if (!interaction.channel) return;
   await interaction.deferReply();
   await sendHelp(interaction.channel);
-  await interaction.editReply("Done!");
+  await interaction.deleteReply();
 };
 
 const commandHandler: CommandHandler = {
