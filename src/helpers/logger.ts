@@ -64,7 +64,7 @@ class Logger {
       this.sendMsgToCloudWatch(msg);
       return;
     }
-    console.log(msg, data);
+    console.log(msg, JSON.stringify(data, null, 4));
     this.sendMsgToCloudWatch(msg, data);
   };
 
@@ -74,7 +74,7 @@ class Logger {
       this.sendMsgToCloudWatch(msg);
       return;
     }
-    console.error(msg, data);
+    console.error(msg, JSON.stringify(data, null, 4));
     this.sendMsgToCloudWatch(msg, data);
   };
 }
