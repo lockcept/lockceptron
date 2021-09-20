@@ -36,11 +36,6 @@ const main = async (client: Discord.Client) => {
 
       client.on("interactionCreate", async (interaction) => {
         if (!interaction.isCommand()) return;
-        logger.log("interactionCreate log", {
-          commandId: interaction.commandId,
-          commandName: interaction.commandName,
-          options: interaction.options,
-        });
         try {
           await commandInteractionHandler(interaction);
         } catch (e) {
@@ -49,6 +44,15 @@ const main = async (client: Discord.Client) => {
       });
     })
   );
+
+  client.on("interactionCreate", async (interaction) => {
+    if (!interaction.isCommand()) return;
+    logger.log("interactionCreate log", {
+      commandId: interaction.commandId,
+      commandName: interaction.commandName,
+      options: interaction.options,
+    });
+  });
 
   await client.application.commands.set(commandDatas);
 };
