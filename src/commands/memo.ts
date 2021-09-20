@@ -41,8 +41,7 @@ const commandInteractionHandler: CommandInteractionHandler = async (
   const { options } = interaction;
   const subCommand = options.getSubcommand();
   if (subCommand === "save") {
-    const memo = options.get("memo", true).value;
-    if (typeof memo !== "string") return;
+    const memo = options.getString("memo", true);
 
     await saveMemo(
       interaction.channel,
