@@ -50,7 +50,7 @@ const main = async (client: Discord.Client) => {
     logger.log("interactionCreate log", {
       commandId: interaction.commandId,
       commandName: interaction.commandName,
-      options: interaction.options,
+      options: interaction.options.data,
     });
   });
 
