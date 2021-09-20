@@ -1,6 +1,6 @@
 import { stage } from "../config";
 
-import { MessageListener } from "../helpers/addMessageListener";
+import { MessageListener } from "../helpers/messageListener";
 import { sendDebug } from "../services/debugService";
 
 const debug: MessageListener = async (msg, message) => {

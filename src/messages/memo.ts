@@ -1,4 +1,4 @@
-import { MessageListener } from "../helpers/addMessageListener";
+import { MessageListener } from "../helpers/messageListener";
 import substring from "../helpers/substring";
 import { loadMemo, saveMemo } from "../services/memoService";
 
