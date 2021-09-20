@@ -33,6 +33,7 @@ export const helpBoss = async (channel: DiscordChannel) => {
           "tron boss add",
           "tron boss price",
           "tron boss list",
+          "tron boss info",
           "tron boss pay",
           "tron boss remove",
           `자세한 사항은 [Command DOCS](${helpDoc})`,
