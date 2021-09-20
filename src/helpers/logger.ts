@@ -6,6 +6,7 @@ import {
 } from "@aws-sdk/client-cloudwatch-logs";
 /* eslint-disable no-console */
 import * as AWS from "@aws-sdk/client-cloudwatch-logs";
+import * as util from "util";
 
 import { credentials, stage } from "../config";
 
@@ -48,7 +49,7 @@ class Logger {
       logStreamName,
       logEvents: [
         {
-          message: msg + (data ? ` ${JSON.stringify(data, null, 4)}` : ""),
+          message: msg + (data ? ` ${util.inspect(data)}` : ""),
           timestamp: Date.now(),
         },
       ],
@@ -64,7 +65,7 @@ class Logger {
       this.sendMsgToCloudWatch(msg);
       return;
     }
-    console.log(msg, JSON.stringify(data, null, 4));
+    console.log(msg, util.inspect(data));
     this.sendMsgToCloudWatch(msg, data);
   };
 
@@ -74,7 +75,7 @@ class Logger {
       this.sendMsgToCloudWatch(msg);
       return;
     }
-    console.error(msg, JSON.stringify(data, null, 4));
+    console.error(msg, util.inspect(data));
     this.sendMsgToCloudWatch(msg, data);
   };
 }
