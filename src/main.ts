@@ -36,6 +36,7 @@ const main = async (client: Discord.Client) => {
 
       client.on("interactionCreate", async (interaction) => {
         if (!interaction.isCommand()) return;
+        logger.log("interactionCreate log", interaction);
         try {
           await commandInteractionHandler(interaction);
         } catch (e) {
