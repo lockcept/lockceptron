@@ -1,5 +1,5 @@
 import { chain, random, range } from "lodash";
-import DiscordChannel from "../helpers/discordChannel";
+import { DiscordChannel } from "../helpers/type";
 
 const getOne = (candidates: string[]): string => {
   return candidates[random(candidates.length - 1)];

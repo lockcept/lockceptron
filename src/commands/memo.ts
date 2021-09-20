@@ -3,7 +3,6 @@ import {
   CommandHandler,
   CommandInteractionHandler,
 } from "../helpers/commandHandler";
-import { sendHelp } from "../services/helpService";
 import { loadMemo, saveMemo } from "../services/memoService";
 
 const COMMAND_NAME = "memo";
@@ -49,17 +48,22 @@ const commandInteractionHandler: CommandInteractionHandler = async (
       interaction.channel,
       interaction.guild.id,
       interaction.user.id,
-      memo
+      memo,
+      async (message) => {
+        await interaction.editReply(message);
+      }
     );
   }
   if (subCommand === "load") {
     await loadMemo(
       interaction.channel,
       interaction.guild.id,
-      interaction.user.id
+      interaction.user.id,
+      async (message) => {
+        await interaction.editReply(message);
+      }
     );
   }
-  await interaction.editReply("Done!");
 };
 
 const commandHandler: CommandHandler = {
