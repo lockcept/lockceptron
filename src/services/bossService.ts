@@ -2,6 +2,7 @@ import { MessageEmbed } from "discord.js";
 import { chain, compact, filter, forEach, map, partition, round } from "lodash";
 import { customAlphabet } from "nanoid";
 import { nolookalikes } from "nanoid-dictionary";
+import { ServiceCallback, DiscordChannel } from "../helpers/type";
 import { helpDoc } from "../config";
 import {
   BossItem,
@@ -12,7 +13,6 @@ import {
   updateBossItem,
 } from "../dynamodb/boss";
 import escapeDiscord from "../helpers/escape";
-import { DiscordChannel } from "../helpers/type";
 
 const ROUND_PRECISION = 1;
 const MAX_PRICE = 1000000000000;
@@ -62,20 +62,24 @@ export const removeBoss = async (
   channel: DiscordChannel,
   guild: string,
   itemId: string,
-  userId: string
+  userId: string,
+  callback?: ServiceCallback
 ) => {
+  const done = callback ?? channel.send.bind(channel);
+
   const bossItem = await getBossItem(guild, itemId);
   if (!bossItem) {
-    await channel.send("해당하는 아이템이 없습니다.");
+    await done("해당하는 아이템이 없습니다.");
     return;
   }
   if (bossItem.from !== userId) {
-    await channel.send(`[${itemId}]: 권한이 없습니다.`);
+    await done(`[${itemId}]: 권한이 없습니다.`);
     return;
   }
 
   const success = await deleteBossItem(guild, itemId);
-  if (success) await channel.send(`[${itemId}]: 삭제 완료`);
+  if (success) await done(`[${itemId}]: 삭제 완료`);
+  else await done(`[${itemId}]: 삭제 실패`);
 };
 
 export const updateBossPrice = async (
