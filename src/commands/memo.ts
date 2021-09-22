@@ -40,7 +40,8 @@ const commandInteractionHandler: CommandInteractionHandler = async (
   await interaction.deferReply();
   const { options } = interaction;
   const subCommand = options.getSubcommand();
-  if (subCommand === "save") {
+  const subCommandGroup = options.getSubcommandGroup(false);
+  if (!subCommandGroup && subCommand === "save") {
     const memo = options.getString("memo", true);
 
     await saveMemo(
@@ -53,7 +54,7 @@ const commandInteractionHandler: CommandInteractionHandler = async (
       }
     );
   }
-  if (subCommand === "load") {
+  if (!subCommandGroup && subCommand === "load") {
     await loadMemo(
       interaction.channel,
       interaction.guild.id,
