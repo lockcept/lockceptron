@@ -185,7 +185,7 @@ const commandInteractionHandler: CommandInteractionHandler = async (
     const itemName = item.substring(0, 20);
     await addBoss(
       interaction.channel,
-      interaction.id,
+      interaction.guild.id,
       itemName,
       fromUser,
       userIds,
