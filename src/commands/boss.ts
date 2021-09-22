@@ -9,6 +9,9 @@ import {
   removeBoss,
   addBoss,
   listBoss,
+  receiptBoss,
+  infoBoss,
+  renameBoss,
 } from "../services/bossService";
 import {
   CommandHandler,
@@ -234,8 +237,17 @@ const commandInteractionHandler: CommandInteractionHandler = async (
   if (subCommand === "pay") {
     //
   }
-  if (subCommand === "receipt") {
-    //
+  if (!subCommandGroup && subCommand === "receipt") {
+    const { member } = interaction;
+    if (member instanceof GuildMember) {
+      await receiptBoss(
+        interaction.channel,
+        interaction.guild.id,
+        interaction.user.id,
+        member.displayName
+      );
+    }
+    await interaction.deleteReply();
   }
   if (subCommandGroup === "list") {
     if (subCommand === "me") {
@@ -256,11 +268,23 @@ const commandInteractionHandler: CommandInteractionHandler = async (
       await interaction.deleteReply();
     }
   }
-  if (subCommand === "info") {
-    //
+  if (!subCommandGroup && subCommand === "info") {
+    const item = options.getString("item", true);
+    await infoBoss(interaction.channel, interaction.guild.id, item);
+    await interaction.deleteReply();
   }
-  if (subCommand === "rename") {
-    //
+  if (!subCommandGroup && subCommand === "rename") {
+    const item = options.getString("item", true);
+    const name = options.getString("name", true);
+    await renameBoss(
+      interaction.channel,
+      interaction.guild.id,
+      item,
+      name,
+      async (message) => {
+        interaction.editReply(message);
+      }
+    );
   }
 };
 
