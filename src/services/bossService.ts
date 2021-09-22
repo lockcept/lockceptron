@@ -125,8 +125,11 @@ export const payBossUser = async (
   channel: DiscordChannel,
   guild: string,
   fromUser: string,
-  toUser: string
+  toUser: string,
+  callback?: ServiceCallback
 ) => {
+  const done = callback ?? channel.send.bind(channel);
+
   const allBossItems = await scanAllBossItems(guild);
   const validBossItems = allBossItems.filter(
     (bossItem) =>
@@ -148,7 +151,7 @@ export const payBossUser = async (
     .round(ROUND_PRECISION)
     .value();
   if (amount) {
-    await channel.send(`<@!${toUser}>에게 ${amount} 상환 완료!`);
+    await done(`<@!${toUser}>에게 ${amount} 상환 완료!`);
     await Promise.all(
       map(paidItems, async (item) => {
         if (item.to.length === item.pay.length) {
@@ -169,16 +172,19 @@ export const payBossItem = async (
   guild: string,
   itemId: string,
   fromUser: string,
-  toUsers: string[]
+  toUsers: string[],
+  callback?: ServiceCallback
 ) => {
+  const done = callback ?? channel.send.bind(channel);
+
   const prevItem = await getBossItem(guild, itemId);
   if (!prevItem) {
-    await channel.send("아이템이 없습니다.");
+    await done("아이템이 없습니다.");
     return;
   }
 
   if (prevItem.from !== fromUser) {
-    await channel.send(`[${itemId}]: 권한이 없습니다.`);
+    await done(`[${itemId}]: 권한이 없습니다.`);
     return;
   }
   const existUserIds = toUsers.filter(
@@ -193,7 +199,7 @@ export const payBossItem = async (
   );
 
   if (bossItem) {
-    await channel.send(
+    await done(
       escapeDiscord(
         `[${itemId}]: ${bossItem.itemName} ${existUserIds.length}명 상환 완료!`
       )
@@ -207,6 +213,8 @@ export const payBossItem = async (
         )
       );
     }
+  } else {
+    await done(`[${itemId}]: 상환 실패`);
   }
 };
 
