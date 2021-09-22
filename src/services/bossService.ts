@@ -359,13 +359,17 @@ export const renameBoss = async (
   channel: DiscordChannel,
   guild: string,
   itemId: string,
-  itemName: string
+  itemName: string,
+  callback?: ServiceCallback
 ) => {
+  const done = callback ?? channel.send.bind(channel);
   const bossItem = await updateBossItem(guild, itemId, { itemName }, {});
 
   if (bossItem) {
-    await channel.send(
+    await done(
       escapeDiscord(`[${bossItem.itemId}]: ${bossItem.itemName} 개명 완료`)
     );
+  } else {
+    await done(`[${itemId}]:  개명 실패`);
   }
 };
