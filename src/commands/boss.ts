@@ -175,7 +175,19 @@ const commandInteractionHandler: CommandInteractionHandler = async (
     );
   }
   if (subCommand === "price") {
-    //
+    const item = options.getString("item", true);
+    const price = options.getNumber("price", true);
+    const commission = options.getNumber("commission");
+    await updateBossPrice(
+      interaction.channel,
+      interaction.guild.id,
+      item,
+      price,
+      commission ?? undefined,
+      async (message) => {
+        interaction.editReply(message);
+      }
+    );
   }
   if (subCommand === "pay") {
     //
