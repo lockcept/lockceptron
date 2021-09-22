@@ -1,5 +1,5 @@
-import { ApplicationCommandData, CommandInteraction } from "discord.js";
 import { isEmpty } from "lodash";
+import { ApplicationCommandData, CommandInteraction } from "discord.js";
 import { pickRandomMulti, pickRandomOnce } from "../services/randomService";
 import {
   CommandHandler,
@@ -55,7 +55,8 @@ const commandInteractionHandler: CommandInteractionHandler = async (
   await interaction.deferReply();
   const { options } = interaction;
   const subCommand = options.getSubcommand();
-  if (subCommand === "multi") {
+  const subCommandGroup = options.getSubcommandGroup(false);
+  if (!subCommandGroup && subCommand === "multi") {
     const n = options.getNumber("n", true);
     const candidates = options.getString("candidates", true).split(" ");
 
@@ -73,7 +74,7 @@ const commandInteractionHandler: CommandInteractionHandler = async (
       }
     );
   }
-  if (subCommand === "once") {
+  if (!subCommandGroup && subCommand === "once") {
     const candidates = options.getString("candidates", true).split(" ");
 
     if (isEmpty(candidates)) {
