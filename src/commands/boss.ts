@@ -3,7 +3,7 @@ import {
   CommandInteraction,
   GuildMember,
 } from "discord.js";
-import { filter, isEmpty } from "lodash";
+import { compact, filter, isEmpty } from "lodash";
 import {
   updateBossPrice,
   removeBoss,
@@ -12,12 +12,14 @@ import {
   receiptBoss,
   infoBoss,
   renameBoss,
+  payBossUser,
+  payBossItem,
 } from "../services/bossService";
 import {
   CommandHandler,
   CommandInteractionHandler,
 } from "../helpers/commandHandler";
-import { getUsersFromIds } from "../helpers/parseDiscordId";
+import { getUserId, getUsersFromIds } from "../helpers/parseDiscordId";
 
 const COMMAND_NAME = "boss";
 
@@ -234,8 +236,41 @@ const commandInteractionHandler: CommandInteractionHandler = async (
       }
     );
   }
-  if (subCommand === "pay") {
-    //
+  if (subCommandGroup === "pay") {
+    if (subCommand === "user") {
+      const user = options.getString("user", true);
+      if (!getUserId(user)) {
+        await interaction.editReply("Invalid User");
+        return;
+      }
+      await payBossUser(
+        interaction.channel,
+        interaction.guild.id,
+        interaction.user.id,
+        user,
+        async (message) => {
+          interaction.editReply(message);
+        }
+      );
+    }
+    if (subCommand === "item") {
+      const item = options.getString("item", true);
+      const users = options.getString("users", true);
+      const userIds = compact(
+        filter(users.split(" "), (userId) => !!getUserId(userId))
+      );
+
+      await payBossItem(
+        interaction.channel,
+        interaction.guild.id,
+        item,
+        interaction.user.id,
+        userIds,
+        async (message) => {
+          interaction.editReply(message);
+        }
+      );
+    }
   }
   if (!subCommandGroup && subCommand === "receipt") {
     const { member } = interaction;
