@@ -6,7 +6,6 @@ import {
   GetItemCommandInput,
   PutItemCommand,
   PutItemCommandInput,
-  ScanCommand,
   ScanCommandInput,
   UpdateItemCommand,
   UpdateItemCommandInput,
@@ -16,6 +15,7 @@ import dynamoClient from ".";
 import { tableNameByStage } from "../config";
 import logger from "../helpers/logger";
 import getExpression from "./getExpression";
+import scanAll from "./scanAll";
 
 const tableName = tableNameByStage("boss");
 
@@ -88,12 +88,8 @@ export const scanAllBossItems = async (guild: string): Promise<BossItem[]> => {
       ExpressionAttributeNames: { "#g": "guild" },
       ExpressionAttributeValues: { ":g": { S: guild } },
     };
-    const command = new ScanCommand(input);
-    const output = await dynamoClient.send(command);
-    if (!output.Items) return [];
-    const bossItems = compact(
-      output.Items.map((item) => getBossItemFromItem(item))
-    );
+    const items = await scanAll(input);
+    const bossItems = compact(items.map((item) => getBossItemFromItem(item)));
     logger.log("Boss: scanItems", { guild });
     return bossItems;
   } catch (err) {
