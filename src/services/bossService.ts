@@ -1,5 +1,14 @@
 import { MessageEmbed } from "discord.js";
-import { chain, compact, filter, forEach, map, partition, round } from "lodash";
+import {
+  chain,
+  compact,
+  filter,
+  forEach,
+  map,
+  partition,
+  round,
+  uniq,
+} from "lodash";
 import { customAlphabet } from "nanoid";
 import { nolookalikes } from "nanoid-dictionary";
 import { ServiceCallback, DiscordChannel } from "../helpers/type";
@@ -187,7 +196,7 @@ export const payBossItem = async (
     await done(`[${itemId}]: 권한이 없습니다.`);
     return;
   }
-  const existUserIds = toUsers.filter(
+  const existUserIds = uniq(toUsers).filter(
     (userId) => prevItem.to.includes(userId) && !prevItem.pay.includes(userId)
   );
 
@@ -209,7 +218,7 @@ export const payBossItem = async (
       await deleteBossItem(guild, bossItem.itemId);
       await channel.send(
         escapeDiscord(
-          `[${itemId}] ${bossItem.itemName} 상환이 완료되어 삭제합니다.`
+          `[${itemId}]: ${bossItem.itemName} 상환이 완료되어 삭제합니다.`
         )
       );
     }

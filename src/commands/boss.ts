@@ -3,7 +3,7 @@ import {
   CommandInteraction,
   GuildMember,
 } from "discord.js";
-import { compact, filter, isEmpty } from "lodash";
+import { compact, filter, isEmpty, map } from "lodash";
 import {
   updateBossPrice,
   removeBoss,
@@ -95,8 +95,8 @@ const commandData: ApplicationCommandData = {
           options: [
             {
               name: "user",
-              type: "USER",
-              description: "User to pay",
+              type: "STRING",
+              description: "User to pay for",
               required: true,
             },
           ],
@@ -110,6 +110,12 @@ const commandData: ApplicationCommandData = {
               name: "item",
               type: "STRING",
               description: "Item to pay",
+              required: true,
+            },
+            {
+              name: "users",
+              type: "STRING",
+              description: "Users to pay for",
               required: true,
             },
           ],
@@ -239,7 +245,8 @@ const commandInteractionHandler: CommandInteractionHandler = async (
   if (subCommandGroup === "pay") {
     if (subCommand === "user") {
       const user = options.getString("user", true);
-      if (!getUserId(user)) {
+      const userId = getUserId(user);
+      if (!userId) {
         await interaction.editReply("Invalid User");
         return;
       }
@@ -247,7 +254,7 @@ const commandInteractionHandler: CommandInteractionHandler = async (
         interaction.channel,
         interaction.guild.id,
         interaction.user.id,
-        user,
+        userId,
         async (message) => {
           interaction.editReply(message);
         }
@@ -257,7 +264,7 @@ const commandInteractionHandler: CommandInteractionHandler = async (
       const item = options.getString("item", true);
       const users = options.getString("users", true);
       const userIds = compact(
-        filter(users.split(" "), (userId) => !!getUserId(userId))
+        map(users.replace("><", "> <").split(" "), getUserId)
       );
 
       await payBossItem(
