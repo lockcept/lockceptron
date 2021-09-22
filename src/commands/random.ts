@@ -1,9 +1,5 @@
-import {
-  ApplicationCommandChoicesData,
-  ApplicationCommandData,
-  CommandInteraction,
-} from "discord.js";
-import { chain, isEmpty, map, range } from "lodash";
+import { ApplicationCommandData, CommandInteraction } from "discord.js";
+import { isEmpty } from "lodash";
 import { pickRandomMulti, pickRandomOnce } from "../services/randomService";
 import {
   CommandHandler,
@@ -11,10 +7,6 @@ import {
 } from "../helpers/commandHandler";
 
 const COMMAND_NAME = "random";
-const ARGMAX = 9;
-const args: ApplicationCommandChoicesData[] = map(range(ARGMAX), (idx) => {
-  return { name: `arg${idx}`, type: "STRING", description: `arg${idx}` };
-});
 
 const commandData: ApplicationCommandData = {
   name: COMMAND_NAME,
@@ -24,7 +16,14 @@ const commandData: ApplicationCommandData = {
       name: "once",
       description: "Pick once",
       type: "SUB_COMMAND",
-      options: [...args],
+      options: [
+        {
+          name: "candidates",
+          description: "Candidates to pick, separate by blank",
+          type: "STRING",
+          required: true,
+        },
+      ],
     },
     {
       name: "multi",
@@ -37,7 +36,12 @@ const commandData: ApplicationCommandData = {
           description: "Counts to try",
           required: true,
         },
-        ...args,
+        {
+          name: "candidates",
+          description: "Candidates to pick, separate by blank",
+          type: "STRING",
+          required: true,
+        },
       ],
     },
   ],
@@ -53,10 +57,7 @@ const commandInteractionHandler: CommandInteractionHandler = async (
   const subCommand = options.getSubcommand();
   if (subCommand === "multi") {
     const n = options.getNumber("n", true);
-    const candidates = chain(args)
-      .map((arg) => options.getString(arg.name))
-      .compact()
-      .value();
+    const candidates = options.getString("candidates", true).split(" ");
 
     if (isEmpty(candidates)) {
       await interaction.editReply("Invalid Candidates");
@@ -73,10 +74,7 @@ const commandInteractionHandler: CommandInteractionHandler = async (
     );
   }
   if (subCommand === "once") {
-    const candidates = chain(args)
-      .map((arg) => options.getString(arg.name))
-      .compact()
-      .value();
+    const candidates = options.getString("candidates", true).split(" ");
 
     if (isEmpty(candidates)) {
       await interaction.editReply("Invalid Candidates");
