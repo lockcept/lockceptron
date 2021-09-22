@@ -87,10 +87,12 @@ export const updateBossPrice = async (
   guild: string,
   itemId: string,
   price: number,
-  commission?: number
+  commission?: number,
+  callback?: ServiceCallback
 ) => {
+  const done = callback ?? channel.send.bind(channel);
   if (price < 0 || price > MAX_PRICE) {
-    await channel.send("잘못된 가격입니다.");
+    await done("잘못된 가격입니다.");
     return;
   }
 
@@ -105,13 +107,14 @@ export const updateBossPrice = async (
   );
 
   if (bossItem)
-    await channel.send(
+    await done(
       escapeDiscord(
         `[${itemId}]: ${bossItem.itemName} 가격 등록 완료! (인당 ${getDividend(
           bossItem
         )})`
       )
     );
+  else await done(escapeDiscord(`[${itemId}]:  가격 등록 실패!`));
 };
 
 export const payBossUser = async (
