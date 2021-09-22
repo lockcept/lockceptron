@@ -1,6 +1,15 @@
-import { ApplicationCommandData, CommandInteraction } from "discord.js";
+import {
+  ApplicationCommandData,
+  CommandInteraction,
+  GuildMember,
+} from "discord.js";
 import { filter, isEmpty } from "lodash";
-import { updateBossPrice, removeBoss, addBoss } from "../services/bossService";
+import {
+  updateBossPrice,
+  removeBoss,
+  addBoss,
+  listBoss,
+} from "../services/bossService";
 import {
   CommandHandler,
   CommandInteractionHandler,
@@ -167,7 +176,8 @@ const commandInteractionHandler: CommandInteractionHandler = async (
   await interaction.deferReply();
   const { options } = interaction;
   const subCommand = options.getSubcommand();
-  if (subCommand === "add") {
+  const subCommandGroup = options.getSubcommandGroup(false);
+  if (!subCommandGroup && subCommand === "add") {
     const item = options.getString("item", true);
     const users = options.getString("users", true);
     const allUserIds = await getUsersFromIds(
@@ -194,7 +204,7 @@ const commandInteractionHandler: CommandInteractionHandler = async (
       }
     );
   }
-  if (subCommand === "remove") {
+  if (!subCommandGroup && subCommand === "remove") {
     const item = options.getString("item", true);
     await removeBoss(
       interaction.channel,
@@ -206,7 +216,7 @@ const commandInteractionHandler: CommandInteractionHandler = async (
       }
     );
   }
-  if (subCommand === "price") {
+  if (!subCommandGroup && subCommand === "price") {
     const item = options.getString("item", true);
     const price = options.getNumber("price", true);
     const commission = options.getNumber("commission");
@@ -227,8 +237,24 @@ const commandInteractionHandler: CommandInteractionHandler = async (
   if (subCommand === "receipt") {
     //
   }
-  if (subCommand === "list") {
-    //
+  if (subCommandGroup === "list") {
+    if (subCommand === "me") {
+      const { member } = interaction;
+      if (member instanceof GuildMember) {
+        const { displayName } = member;
+        await listBoss(
+          interaction.channel,
+          interaction.guild.id,
+          interaction.user.id,
+          displayName
+        );
+      }
+      await interaction.deleteReply();
+    }
+    if (subCommand === "all") {
+      await listBoss(interaction.channel, interaction.guild.id);
+      await interaction.deleteReply();
+    }
   }
   if (subCommand === "info") {
     //
