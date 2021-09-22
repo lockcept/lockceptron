@@ -3,6 +3,7 @@ import { chain, compact, filter, forEach, map, partition, round } from "lodash";
 import { customAlphabet } from "nanoid";
 import { nolookalikes } from "nanoid-dictionary";
 import { ServiceCallback, DiscordChannel } from "../helpers/type";
+
 import { helpDoc } from "../config";
 import {
   BossItem,
@@ -51,11 +52,14 @@ export const addBoss = async (
   guild: string,
   itemName: string,
   fromUser: string,
-  toUsers: string[]
+  toUsers: string[],
+  callback?: ServiceCallback
 ) => {
+  const done = callback ?? channel.send.bind(channel);
+
   const itemId = customAlphabet(nolookalikes, 6)();
   await putBossItem(guild, itemId, itemName, fromUser, toUsers);
-  await channel.send(escapeDiscord(`[${itemId}]: ${itemName} 등록 완료!`));
+  await done(escapeDiscord(`[${itemId}]: ${itemName} 등록 완료!`));
 };
 
 export const removeBoss = async (
