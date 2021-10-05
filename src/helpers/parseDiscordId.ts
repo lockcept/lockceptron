@@ -4,7 +4,12 @@ import { fetchMembers, getUsersFromRole } from "./getUsersFromRole";
 
 export const getUserId = (cmd: string): string | null => {
   const result = cmd.match(/^<@!([0-9]+)>$/i);
-  if (!result) return null;
+  if (!result) {
+    // 모바일 태그에서 !가 없는 경우가 있음
+    const mobileResult = cmd.match(/^<@([0-9]+)>$/i);
+    if (!mobileResult) return null;
+    return mobileResult[1];
+  }
   return result[1];
 };
 
