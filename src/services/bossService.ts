@@ -173,6 +173,8 @@ export const payBossUser = async (
         }
       })
     );
+  } else {
+    await done(`<@!${toUser}>에게 상환 할 내역이 없습니다.`);
   }
 };
 
