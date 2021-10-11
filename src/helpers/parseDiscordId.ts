@@ -3,10 +3,10 @@ import { chain, map } from "lodash";
 import { fetchMembers, getUsersFromRole } from "./getUsersFromRole";
 
 export const getUserId = (cmd: string): string | null => {
-  const result = cmd.match(/^<@!([0-9]+)>$/i);
+  const result = cmd.match(/^<@!([0-9]+)>$/);
   if (!result) {
     // 모바일 태그에서 !가 없는 경우가 있음
-    const mobileResult = cmd.match(/^<@([0-9]+)>$/i);
+    const mobileResult = cmd.match(/^<@([0-9]+)>$/);
     if (!mobileResult) return null;
     return mobileResult[1];
   }
@@ -14,7 +14,7 @@ export const getUserId = (cmd: string): string | null => {
 };
 
 export const getRoleId = (cmd: string): string | null => {
-  const result = cmd.match(/^<@&([0-9]+)>$/i);
+  const result = cmd.match(/^<@&([0-9]+)>$/);
   if (!result) return null;
   return result[1];
 };
