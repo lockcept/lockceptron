@@ -49,7 +49,7 @@ class Logger {
       logStreamName,
       logEvents: [
         {
-          message: msg + (data ? ` ${util.inspect(data)}` : ""),
+          message: msg + (data ? ` ${util.inspect(data, false, 10)}` : ""),
           timestamp: Date.now(),
         },
       ],
@@ -75,7 +75,7 @@ class Logger {
       this.sendMsgToCloudWatch(msg);
       return;
     }
-    console.error(msg, util.inspect(data));
+    console.error(msg, util.inspect(data, false, 10));
     this.sendMsgToCloudWatch(msg, data);
   };
 }
