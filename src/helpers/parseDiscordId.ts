@@ -42,3 +42,12 @@ export const getUsersFromIds = async (
   const userIds = chain(userIdSet).flatten().compact().uniq().value();
   return userIds;
 };
+
+export const getUsersFromIdsString = async (
+  guild: Discord.Guild,
+  userOrRolesInString: string
+): Promise<string[]> => {
+  const match = userOrRolesInString.match(/<@(!|&)?([0-9]+)>/g);
+  if (!match) return [];
+  return getUsersFromIds(guild, Object.values(match));
+};
