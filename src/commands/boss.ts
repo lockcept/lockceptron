@@ -19,7 +19,7 @@ import {
   CommandHandler,
   CommandInteractionHandler,
 } from "../helpers/commandHandler";
-import { getUserId, getUsersFromIds } from "../helpers/parseDiscordId";
+import { getUserId, getUsersFromIdsString } from "../helpers/parseDiscordId";
 
 const COMMAND_NAME = "boss";
 
@@ -191,10 +191,7 @@ const commandInteractionHandler: CommandInteractionHandler = async (
   if (!subCommandGroup && subCommand === "add") {
     const item = options.getString("item", true);
     const users = options.getString("users", true);
-    const allUserIds = await getUsersFromIds(
-      interaction.guild,
-      users.split(" ")
-    );
+    const allUserIds = await getUsersFromIdsString(interaction.guild, users);
     const fromUser = interaction.user.id;
     const userIds = filter(allUserIds, (userId) => userId !== fromUser);
 
