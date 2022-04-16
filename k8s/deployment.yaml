@@ -19,7 +19,7 @@ spec:
         imagePullPolicy: Always
         env:
           - name: STAGE
-            value: dev
+            value: prod
         volumeMounts:
         - name: lockceptron-config
           mountPath: /app/src/config.ts
