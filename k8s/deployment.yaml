@@ -16,7 +16,7 @@ spec:
       containers:
       - name: lockceptron
         image: inerplat/lockceptron:main
-        env:
+        envs:
           name: STAGE
           value: dev
         volumeMounts:
