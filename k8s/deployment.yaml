@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lockceptron-deployment
+  labels:
+    app: lockceptron
+spec:
+  selector:
+    matchLabels:
+      app: lockceptron
+  template:
+    metadata:
+      labels:
+        app: lockceptron
+    spec:
+      containers:
+      - name: lockceptron
+        image: inerplat/lockceptron:main
+        env:
+          name: STAGE
+          value: dev
+        volumeMounts:
+        - name: lockceptron-config
+          mountPath: /app/src/config.ts
+          subPath: config.ts
+      volumes:
+      - name: lockceptron-config
+        configMap:
+          name: lockceptron-configmap
