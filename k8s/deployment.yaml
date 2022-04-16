@@ -16,9 +16,9 @@ spec:
       containers:
       - name: lockceptron
         image: inerplat/lockceptron:main
-        envs:
-          name: STAGE
-          value: dev
+        env:
+          - name: STAGE
+            value: dev
         volumeMounts:
         - name: lockceptron-config
           mountPath: /app/src/config.ts
