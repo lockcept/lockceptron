@@ -268,20 +268,43 @@ export const receiptBoss = async (
     sumToGet[fromUser] = round(dividend + (prevPrice ?? 0), ROUND_PRECISION);
   });
 
-  const giveDescription = map(sumToGive, (amount, user) => {
-    return `<@!${user}> ${amount}`;
-  }).join("\n");
-  const getDescription = map(sumToGet, (amount, user) => {
-    return `<@!${user}> ${amount}`;
-  }).join("\n");
+  const netSum: { netUserId: string; net: number }[] = chain([
+    ...Object.keys(sumToGive),
+    ...Object.keys(sumToGet),
+  ])
+    .uniq()
+    .map((netUserId) => {
+      const give = sumToGive[netUserId] ?? 0;
+      const get = sumToGet[netUserId] ?? 0;
+      return { netUserId, net: give - get };
+    })
+    .value();
+
+  const notExist = "존재 하지 않습니다.";
+
+  const giveDescription =
+    map(sumToGive, (amount, user) => {
+      return `<@!${user}> ${amount}`;
+    }).join("\n") || notExist;
+  const getDescription =
+    map(sumToGet, (amount, user) => {
+      return `<@!${user}> ${amount}`;
+    }).join("\n") || notExist;
+  const netDescription =
+    map(netSum, ({ netUserId, net }) => {
+      return `<@!${netUserId}> ${net}`;
+    }).join("\n") || notExist;
+
+  const messageEmbed = new MessageEmbed()
+    .setTitle(`${[displayName, "영수증"].join(" ")}`)
+    .addFields([
+      { name: "받을 돈", value: escapeDiscord(getDescription) },
+      { name: "줄 돈", value: escapeDiscord(giveDescription) },
+      { name: "차액 (줄 돈)", value: escapeDiscord(netDescription) },
+    ]);
 
   await channel.send({
-    embeds: [
-      new MessageEmbed({
-        title: `${[displayName, "영수증"].join(" ")}`,
-        description: `받을 돈\n${getDescription}\n줄 돈\n${giveDescription}`,
-      }),
-    ],
+    embeds: [messageEmbed],
   });
 };
 
