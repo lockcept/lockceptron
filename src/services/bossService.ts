@@ -294,18 +294,28 @@ export const listBoss = async (
   const bossItems = await scanAllBossItems(guild);
 
   if (!userId) {
-    const description = bossItems
+    const [itemsWithPrice, itemsWithoutPrice] = partition(bossItems, "price");
+    const descriptionWithPrice = itemsWithPrice
       .map((item) => {
         return `${item.itemId}: ${item.itemName} <@!${item.from}>`;
       })
       .join("\n");
+    const descriptionWithoutPrice = itemsWithoutPrice
+      .map((item) => {
+        return `${item.itemId}: ${item.itemName} <@!${item.from}>`;
+      })
+      .join("\n");
+
+    const messageEmbed = new MessageEmbed().setTitle("모든 아이템").addFields([
+      { name: "팔린 아이템", value: escapeDiscord(descriptionWithPrice) },
+      {
+        name: "팔리지 않은 아이템",
+        value: escapeDiscord(descriptionWithoutPrice),
+      },
+    ]);
+
     await channel.send({
-      embeds: [
-        new MessageEmbed({
-          title: `모든 아이템`,
-          description: escapeDiscord(description),
-        }),
-      ],
+      embeds: [messageEmbed],
     });
     return;
   }
