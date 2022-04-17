@@ -16,6 +16,21 @@ jobs:
         id: vars
         run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
       
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.PAT }}
+
+      - name: Change deployment image tag
+        run: |
+          sed -i -E "s/image: (.*):(.*)/image: \1:${{ steps.vars.outputs.tag }}/g" k8s/deployment.yaml
+      
+      - name: Commit deployment file
+        run: |
+          git config --global user.name 'Github Actions'
+          git config --global user.email 'inerplat@gmail.com'
+          git commit --allow-empty -am "Automated version setting: ${{ steps.vars.outputs.tag }}"
+          git push origin HEAD:${{ steps.vars.outputs.tag }} --force
+
       - name: Docker Setup QEMU
         uses: docker/setup-qemu-action@v1.2.0
 
