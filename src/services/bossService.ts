@@ -319,17 +319,15 @@ export const listBoss = async (
   if (!userId) {
     const [itemsWithPrice, itemsWithoutPrice] = partition(bossItems, "price");
     const descriptionWithPrice = itemsWithPrice
-      .map((item) => {
-        return `${item.itemId}: ${item.itemName} <@!${item.from}>`;
-      })
-      .join("\n");
-    const descriptionWithoutPrice = itemsWithoutPrice
       .map(
         (item) =>
-          `${item.itemId}${item.price ? ` (${getDividend(item)})` : ""}: ${
-            item.itemName
-          } <@!${item.from}>`
+          `${item.itemId}(${getDividend(item)}): ${item.itemName} <@!${
+            item.from
+          }>`
       )
+      .join("\n");
+    const descriptionWithoutPrice = itemsWithoutPrice
+      .map((item) => `${item.itemId}}: ${item.itemName} <@!${item.from}>`)
       .join("\n");
 
     const messageEmbed = new MessageEmbed().setTitle("모든 아이템").addFields([
