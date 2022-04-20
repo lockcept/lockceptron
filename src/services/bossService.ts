@@ -324,7 +324,12 @@ export const listBoss = async (
       })
       .join("\n");
     const descriptionWithoutPrice = itemsWithoutPrice
-      .map((item) => `${item.itemId}: ${item.itemName} <@!${item.from}>`)
+      .map(
+        (item) =>
+          `${item.itemId}${item.price ? ` (${getDividend(item)})` : ""}: ${
+            item.itemName
+          } <@!${item.from}>`
+      )
       .join("\n");
 
     const messageEmbed = new MessageEmbed().setTitle("모든 아이템").addFields([
