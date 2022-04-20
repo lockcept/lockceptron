@@ -5,8 +5,8 @@ export const stage = process.env.STAGE ?? "dev";
 
 // eslint-disable-next-line import/prefer-default-export
 const discordToken = {
-  prod: "ODE1ODU3OTQxMzAyMzQ1NzQ5.YDyg6w.C-pk0TmB5uzc62d6ywGNvVLQmZE",
-  dev: "ODIzNTQ3MDQ0NTI1ODk5Nzg2.YFiZ9A.NYDi1e7HPUoJXbjdaScMEhF4IrI",
+  prod: process.env.DISCORD_TOKEN_PROD,
+  dev: process.env.DISCORD_TOKEN_DEV,
 };
 
 export const discordTokenByStage: string = get(discordToken, stage);
@@ -23,8 +23,8 @@ export const tableNameByStage = (tableName: keyof typeof tableNames) => {
 };
 
 export const credentials = {
-  accessKeyId: "AKIAT6YAZPDA7TFRUTEP",
-  secretAccessKey: "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",
+  accessKeyId: process.env.ACCESS_KEY_ID,
+  secretAccessKey: process.env.SECRET_ACCESS_KEY,
 };
 
 export const whatsNew =

@@ -20,6 +20,26 @@ spec:
         env:
           - name: STAGE
             value: prod
+          - name: DISCORD_TOKEN_PROD
+            valueFrom:
+              secretKeyRef:
+                name: lockcept-secret
+                key: discord_token_prod
+          - name: DISCORD_TOKEN_DEV
+            valueFrom:
+              secretKeyRef:
+                name: lockcept-secret
+                key: discord_token_dev
+          - name: ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: lockcept-secret
+                key: access_key_id
+          - name: SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: lockcept-secret
+                key: secret_access_key
         volumeMounts:
         - name: lockceptron-config
           mountPath: /app/src/config.ts
