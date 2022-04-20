@@ -27,7 +27,7 @@ jobs:
       - name: Commit deployment file
         run: |
           git config --global user.name 'Github Actions'
-          git config --global user.email 'inerplat@gmail.com'
+          git config --global user.email 'github-actions[bot]'
           git commit --allow-empty -am "Automated version setting: ${{ steps.vars.outputs.tag }}"
           git push origin HEAD:${{ steps.vars.outputs.tag }} --force
 
