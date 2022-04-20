@@ -1,7 +1,7 @@
 name: image-build
 
 on:
-  create:
+  push:
     tags:
       - v*
   workflow_dispatch:
@@ -11,15 +11,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      
+
       - name: Set output
         id: vars
         run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
-      
+
       - name: Change deployment image tag
         run: |
           sed -i -E "s/image: (.*):(.*)/image: \1:${{ steps.vars.outputs.tag }}/g" k8s/deployment.yaml
-      
+
       - name: Commit deployment file
         run: |
           git config --global user.name 'Github Actions'
@@ -38,6 +38,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
-      
+
       - name: Build Image
         run: docker buildx build --platform linux/amd64,linux/arm64 -t inerplat/lockceptron:${{ steps.vars.outputs.tag }} --push .
