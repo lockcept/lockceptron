@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: lockceptron
-        image: inerplat/lockceptron:main
+        image: inerplat/lockceptron:v0.0.2
         imagePullPolicy: Always
         env:
           - name: STAGE
