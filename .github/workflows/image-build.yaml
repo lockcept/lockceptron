@@ -16,10 +16,6 @@ jobs:
         id: vars
         run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
       
-      - uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.PAT }}
-
       - name: Change deployment image tag
         run: |
           sed -i -E "s/image: (.*):(.*)/image: \1:${{ steps.vars.outputs.tag }}/g" k8s/deployment.yaml
