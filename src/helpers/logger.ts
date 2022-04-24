@@ -7,19 +7,18 @@ import {
 /* eslint-disable no-console */
 import * as AWS from "@aws-sdk/client-cloudwatch-logs";
 import * as util from "util";
-
-import { credentials, stage } from "../config";
+import { AWS_CREDENTIAL, STAGE } from "../environments";
 
 const client = new AWS.CloudWatchLogs({
   credentials: {
-    accessKeyId: credentials.accessKeyId,
-    secretAccessKey: credentials.secretAccessKey,
+    accessKeyId: AWS_CREDENTIAL.accessKeyId,
+    secretAccessKey: AWS_CREDENTIAL.secretAccessKey,
   },
   region: "ap-northeast-2",
 });
 
 const GROUP = "lockceptron";
-const STREAM = `tron-${stage}`;
+const STREAM = `tron-${STAGE}`;
 class Logger {
   static logger = new Logger();
 

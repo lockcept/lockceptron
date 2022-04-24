@@ -1,9 +1,9 @@
-import { stage } from "../config";
+import { STAGE } from "../environments";
 
 const parseMessage = (msg: string): string | null => {
   let command = "";
-  if (stage === "prod") command = "tron";
-  else if (stage === "dev") command = "tron-dev";
+  if (STAGE === "prod") command = "tron";
+  else if (STAGE === "dev") command = "tron-dev";
 
   if (msg.startsWith(`${command} `)) {
     return msg.substring(command.length + 1);

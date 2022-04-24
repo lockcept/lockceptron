@@ -1,10 +1,10 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { credentials } from "../config";
+import { AWS_CREDENTIAL } from "../environments";
 
 const dynamoClient = new DynamoDBClient({
   credentials: {
-    accessKeyId: credentials.accessKeyId,
-    secretAccessKey: credentials.secretAccessKey,
+    accessKeyId: AWS_CREDENTIAL.accessKeyId,
+    secretAccessKey: AWS_CREDENTIAL.secretAccessKey,
   },
   region: "ap-northeast-2",
 });
