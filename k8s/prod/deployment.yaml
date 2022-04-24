@@ -25,11 +25,6 @@ spec:
                 secretKeyRef:
                   name: lockcept-secret
                   key: discord_token_prod
-            - name: DISCORD_TOKEN_DEV
-              valueFrom:
-                secretKeyRef:
-                  name: lockcept-secret
-                  key: discord_token_dev
             - name: ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:

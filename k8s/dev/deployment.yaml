@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lockceptron-dev-deployment
+  labels:
+    app: lockceptron-dev
+spec:
+  selector:
+    matchLabels:
+      app: lockceptron-dev
+  template:
+    metadata:
+      labels:
+        app: lockceptron-dev
+    spec:
+      containers:
+        - name: lockceptron
+          image: inerplat/lockceptron:main
+          imagePullPolicy: Always
+          env:
+            - name: STAGE
+              value: prod
+            - name: DISCORD_TOKEN_DEV
+              valueFrom:
+                secretKeyRef:
+                  name: lockcept-dev-secret
+                  key: discord_token_dev
+            - name: ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: lockcept-dev-secret
+                  key: access_key_id
+            - name: SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: lockcept-dev-secret
+                  key: secret_access_key
