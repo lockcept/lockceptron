@@ -1,10 +1,9 @@
-import { stage } from "../config";
-
+import { STAGE } from "../environments";
 import { MessageListener } from "../helpers/messageListener";
 import { sendDebug } from "../services/debugService";
 
 const debug: MessageListener = async (msg, message) => {
-  if (stage !== "dev") return;
+  if (STAGE !== "dev") return;
   if (message === "debug") {
     sendDebug(msg.channel);
   }
