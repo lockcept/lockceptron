@@ -19,7 +19,7 @@ spec:
           imagePullPolicy: Always
           env:
             - name: STAGE
-              value: prod
+              value: dev
             - name: DISCORD_TOKEN_DEV
               valueFrom:
                 secretKeyRef:
