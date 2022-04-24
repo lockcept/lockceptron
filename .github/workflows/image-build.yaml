@@ -2,6 +2,8 @@ name: image-build
 
 on:
   push:
+    branches:
+      - dev-deploy
     tags:
       - v*
   workflow_dispatch:
