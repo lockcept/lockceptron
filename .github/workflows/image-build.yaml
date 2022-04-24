@@ -18,7 +18,8 @@ jobs:
 
       - name: Change deployment image tag
         run: |
-          sed -i -E "s/image: (.*):(.*)/image: \1:${{ steps.vars.outputs.tag }}/g" k8s/deployment.yaml
+          sed -i -E "s/image: (.*):(.*)/image: \1:${{ steps.vars.outputs.tag }}/g" k8s/dev/deployment.yaml
+          sed -i -E "s/image: (.*):(.*)/image: \1:${{ steps.vars.outputs.tag }}/g" k8s/prod/deployment.yaml
 
       - name: Commit deployment file
         run: |
