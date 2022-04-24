@@ -11,21 +11,12 @@
 
 ```sh
 $ yarn
-$ yarn pm2:init
-$ yarn start:dev
-$ yarn restart:dev # restart
-$ yarn stop:dev # stop
-
-
-$ yarn dev # only if foreground run
+$ yarn dev
 ```
 
 ## Deployment
 
 ```sh
 $ yarn
-$ yarn pm2:init
-$ yarn start
-$ yarn restart # restart
-$ yarn stop # stop
+$ yarn prod
 ```

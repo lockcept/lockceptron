@@ -20,13 +20,7 @@
     "typescript": "^4.2.2"
   },
   "scripts": {
-    "pm2:init": "pm2 install typescript",
-    "start": "STAGE=prod pm2 start ./src/app.ts --name lockceptron",
-    "start:dev": "STAGE=dev pm2 start ./src/app.ts --name lockceptron-dev",
-    "restart": "yarn && yarn stop && yarn start",
-    "restart:dev": "yarn && yarn stop:dev && yarn start:dev",
-    "stop": "pm2 delete lockceptron",
-    "stop:dev": "pm2 delete lockceptron-dev",
+    "prod": "STAGE=prod ts-node-dev src/app.ts",
     "dev": "STAGE=dev ts-node-dev src/app.ts"
   },
   "dependencies": {
@@ -36,7 +30,6 @@
     "lodash": "^4.17.21",
     "nanoid": "^3.1.23",
     "nanoid-dictionary": "^4.3.0",
-    "pm2": "^4.5.5",
     "yargs-parser": "^20.2.7"
   }
 }
