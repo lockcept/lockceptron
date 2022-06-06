@@ -276,7 +276,7 @@ export const receiptBoss = async (
     .map((netUserId) => {
       const give = sumToGive[netUserId] ?? 0;
       const get = sumToGet[netUserId] ?? 0;
-      return { netUserId, net: give - get };
+      return { netUserId, net: round(give - get, ROUND_PRECISION) };
     })
     .value();
 
