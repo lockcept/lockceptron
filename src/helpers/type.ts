@@ -5,6 +5,7 @@ export type DiscordChannel =
   | Discord.DMChannel
   | Discord.TextChannel
   | Discord.NewsChannel
-  | Discord.ThreadChannel;
+  | Discord.ThreadChannel
+  | Discord.VoiceChannel;
 
 export type ServiceCallback = (_message: string) => Promise<void>;
